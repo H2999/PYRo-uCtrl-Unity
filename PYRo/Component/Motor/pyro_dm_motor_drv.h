@@ -24,7 +24,6 @@ class dm_motor_drv_t : public motor_base_t // MIT only
 
     status_t enable() override;
     status_t disable() override;
-    status_t clear_error();
 
     status_t update_feedback() override;
     status_t send_torque(float torque) override;
@@ -35,7 +34,6 @@ class dm_motor_drv_t : public motor_base_t // MIT only
 
     void set_runtime_kp(float kp);
     void set_runtime_kd(float kd);
-    error_code get_error_code() { return _error_code; }
 
   private:
     uint32_t _can_id;

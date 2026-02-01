@@ -14,7 +14,7 @@
 #ifndef __PYRO_DWT_DRV_H__
 #define __PYRO_DWT_DRV_H__
 
-#include <cstdint>
+#include "stdint.h"
 
 namespace pyro
 {

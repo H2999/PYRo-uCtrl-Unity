@@ -1,5 +1,5 @@
 #include "pyro_kin_mec.h"
-#include "cmath"
+#include "arm_math.h"
 
 namespace pyro
 {
