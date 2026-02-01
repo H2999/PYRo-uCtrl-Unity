@@ -1,5 +1,8 @@
 #include "pyro_hybrid_chassis.h"
 
+#include "pyro_dji_motor_drv.h"
+#include "pyro_dm_motor_drv.h"
+
 
 namespace pyro
 {

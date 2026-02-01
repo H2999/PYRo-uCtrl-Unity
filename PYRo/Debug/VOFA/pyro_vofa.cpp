@@ -4,7 +4,7 @@
 #include "task.h"
 
 #include "cstring"
-
+#include "pyro_gimbal_task.h"
 
 namespace pyro
 {

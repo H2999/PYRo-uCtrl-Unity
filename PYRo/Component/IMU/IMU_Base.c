@@ -10,7 +10,7 @@
 void spi2_DMA_init(uint32_t tx_buf, uint32_t rx_buf, uint16_t num);
 void spi2_DMA_enable(uint32_t tx_buf, uint32_t rx_buf, uint16_t ndtr);
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
-static void imu_cmd_spi_dma(void);
+void imu_cmd_spi_dma(void);
 void IMU_Stream1_IRQHandler(void);
 void gyro_cali(float32_t gyro[3]);
 void imu_slove(float gyro[3], float accel[3], bmi088_real_data_t *bmi088);
@@ -138,7 +138,7 @@ static void imu_temp_control(float32_t temp)
 {
     uint16_t temp_pwm;
     static uint8_t temp_constant_time = 0;
-			//在第一次温度控制之后使用闭环温度控制
+    //在第一次温度控制之后使用闭环温度控制
     if (first_temperate)
     {
         //PID_Predict(&imu_temp_pid, temp, 40.0f,&output_temp);
@@ -149,7 +149,7 @@ static void imu_temp_control(float32_t temp)
         temp_pwm = (uint16_t)output_temp;
         imu_temp_pwm(temp_pwm);
     }
-		//第一次温控时进行最大功率开环控制
+    //第一次温控时进行最大功率开环控制
     else
     {
         //首次进行温度闭环，一直最大功率加热
@@ -172,7 +172,7 @@ extern TIM_HandleTypeDef htim3;
 //IMU加热
 static void imu_temp_pwm(uint16_t pwm)
 {
-	//PWM波进行加热
+    //PWM波进行加热
     __HAL_TIM_SetCompare(&htim3, TIM_CHANNEL_1, pwm);
 }
 

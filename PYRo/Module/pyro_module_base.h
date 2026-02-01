@@ -20,7 +20,6 @@
 #ifndef __PYRO_MODULE_BASE_H__
 #define __PYRO_MODULE_BASE_H__
 
-#include "pyro_core_fsm.h"
 #include "pyro_mutex.h"
 #include "pyro_task.h"
 
