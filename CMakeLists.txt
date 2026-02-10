@@ -63,6 +63,7 @@ add_executable(${CMAKE_PROJECT_NAME}
         PYRo/Core/Lock/pyro_rw_lock.cpp
         PYRo/Core/Memory/pyro_core_dma_heap.c
         PYRo/Core/Memory/pyro_core_mem.cpp
+        PYRo/Core/Task/pyro_task.cpp
 
         # --- Peripheral ---
         PYRo/Peripheral/CAN/pyro_can_drv.cpp
@@ -149,10 +150,9 @@ add_executable(${CMAKE_PROJECT_NAME}
         PYRo/Module/Chassis/Hybrid/fsm/pyro_hybrid_jumping_state.cpp
         PYRo/Module/pyro_module_base.cpp
 
-        PYRo/gimbal/pyro_gimbal_task.cpp
-        PYRo/gimbal/fsm/pyro_gimbal_passive_state.cpp
-        PYRo/gimbal/fsm/pyro_gimbal_motion_state.cpp
-        PYRo/gimbal/fsm/pyro_gimbal_active_state.cpp
+        PYRo/Module/gimbal/pyro_gimbal_task.cpp
+        PYRo/Module/gimbal/fsm/pyro_gimbal_passive_state.cpp
+        PYRo/Module/gimbal/fsm/pyro_gimbal_active_state.cpp
 )
 
 add_subdirectory(cmake/stm32cubemx)
@@ -213,10 +213,8 @@ target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC
         PYRo/Device/BMI088
         PYRo/Module
 
-        PYRo/gimbal/fsm
-        PYRo/gimbal
-
-
+        PYRo/Module/gimbal/fsm
+        PYRo/Module/gimbal
 )
 
 
