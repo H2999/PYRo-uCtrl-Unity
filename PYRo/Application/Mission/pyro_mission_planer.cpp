@@ -5,6 +5,7 @@ extern "C"
 {
     extern void pyro_init_thread(void *argument);
     extern void start_debug_task(void *arg);
+    extern void pyro_app_init_thread(void *argument);
 
 #if (ROBOT_ID == HERO_ID) || (ROBOT_ID == SUB_HERO_ID)
 #if BOARD_ID == GIMBAL_ID
@@ -20,15 +21,20 @@ extern "C"
         xTaskCreate(pyro_init_thread, "pyro_init_thread", 512, nullptr,
                     configMAX_PRIORITIES - 1, nullptr);
 
+#if ROBOT_ID == UAV_ID
+        xTaskCreate(pyro_app_init_thread, "pyro_app_init_thread", 512, nullptr,
+            configMAX_PRIORITIES - 1,nullptr);
+#endif
+
 #if (ROBOT_ID == HERO_ID) || (ROBOT_ID == SUB_HERO_ID)
 #if BOARD_ID == GIMBAL_ID
-        // xTaskCreate(hero_gimbal_init, "pyro_gimbal_init", 512, nullptr,
-        //             configMAX_PRIORITIES - 1, nullptr);
-        // xTaskCreate(hero_booster_init, "pyro_booster_init", 512, nullptr,
-        //             configMAX_PRIORITIES - 1, nullptr);
-#elif BOARD_ID == CHASSIS_ID
-        xTaskCreate(hero_chassis_init, "pyro_chassis_init", 512, nullptr,
+        xTaskCreate(hero_gimbal_init, "pyro_gimbal_init", 512, nullptr,
                     configMAX_PRIORITIES - 1, nullptr);
+        xTaskCreate(hero_booster_init, "pyro_booster_init", 512, nullptr,
+                    configMAX_PRIORITIES - 1, nullptr);
+#elif BOARD_ID == CHASSIS_ID
+        // xTaskCreate(hero_chassis_init, "pyro_chassis_init", 512, nullptr,
+        //             configMAX_PRIORITIES - 1, nullptr);
 #endif
 #endif
 
@@ -36,7 +42,6 @@ extern "C"
         xTaskCreate(start_debug_task, "start_debug_task", 128, nullptr,
                     configMAX_PRIORITIES - 2, nullptr);
 #endif
-
 
         vTaskDelete(nullptr);
     }

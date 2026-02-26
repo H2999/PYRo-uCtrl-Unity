@@ -17,32 +17,32 @@ void gimbal_t::state_active_t::execute(
     owner->gimbal_ctx.data_ctx._target_pitch_angle += owner->gimbal_ctx.cmd->pitch_delta_angle;
     owner->gimbal_ctx.data_ctx._target_roll_angle += owner->gimbal_ctx.cmd->roll_delta_angle;
 
-    if (owner->gimbal_ctx.data_ctx._target_yaw_angle > yaw_max_value)
+    if (owner->gimbal_ctx.data_ctx._target_yaw_angle < 2.3f && owner->gimbal_ctx.data_ctx._target_yaw_angle > 0)
     {
-        owner->gimbal_ctx.data_ctx._target_yaw_angle = yaw_max_value;
+        owner->gimbal_ctx.data_ctx._target_yaw_angle = 2.3f;
     }
-    else if (owner->gimbal_ctx.data_ctx._target_yaw_angle < yaw_min_value)
+    else if (owner->gimbal_ctx.data_ctx._target_yaw_angle > -0.8f && owner->gimbal_ctx.data_ctx._target_yaw_angle < 0)
     {
-        owner->gimbal_ctx.data_ctx._target_yaw_angle = yaw_min_value;
-    }
-
-    if (owner->gimbal_ctx.data_ctx._target_pitch_angle > pitch_max_value)
-    {
-        owner->gimbal_ctx.data_ctx._target_pitch_angle = pitch_max_value;
-    }
-    else if (owner->gimbal_ctx.data_ctx._target_pitch_angle < pitch_min_value)
-    {
-        owner->gimbal_ctx.data_ctx._target_pitch_angle = pitch_min_value;
+        owner->gimbal_ctx.data_ctx._target_yaw_angle = -0.8f;
     }
 
-    if (owner->gimbal_ctx.data_ctx._target_roll_angle > pitch_max_value)
-    {
-        owner->gimbal_ctx.data_ctx._target_roll_angle = pitch_max_value;
-    }
-    else if (owner->gimbal_ctx.data_ctx._target_roll_angle < pitch_min_value)
-    {
-        owner->gimbal_ctx.data_ctx._target_roll_angle = pitch_min_value;
-    }
+    // if (owner->gimbal_ctx.data_ctx._target_pitch_angle > pitch_max_value)
+    // {
+    //     owner->gimbal_ctx.data_ctx._target_pitch_angle = pitch_max_value;
+    // }
+    // else if (owner->gimbal_ctx.data_ctx._target_pitch_angle < pitch_min_value)
+    // {
+    //     owner->gimbal_ctx.data_ctx._target_pitch_angle = pitch_min_value;
+    // }
+    //
+    // if (owner->gimbal_ctx.data_ctx._target_roll_angle > pitch_max_value)
+    // {
+    //     owner->gimbal_ctx.data_ctx._target_roll_angle = pitch_max_value;
+    // }
+    // else if (owner->gimbal_ctx.data_ctx._target_roll_angle < pitch_min_value)
+    // {
+    //     owner->gimbal_ctx.data_ctx._target_roll_angle = pitch_min_value;
+    // }
 
     const float yaw_error = owner->gimbal_ctx.data_ctx._target_yaw_angle - owner->gimbal_ctx.data_ctx._current_yaw_angle;
     if (yaw_error > PI)

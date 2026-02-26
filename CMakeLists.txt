@@ -147,7 +147,12 @@ add_executable(${CMAKE_PROJECT_NAME}
         # --- Device ---
         PYRo/Device/BMI088/BMI088_driver.cpp
         PYRo/Device/BMI088/BMI088_middleware.cpp
-#        PYRo/Module/Chassis/Rudder/fsm/pyro_rud_moving_state.cpp
+        PYRo/Module/Gimbal/Uav/pyro_uav_gimbal.h
+        PYRo/Module/Gimbal/Uav/pyro_uav_gimbal.cpp
+        PYRo/Module/Gimbal/Uav/fsm/pyro_passive_state.cpp
+        PYRo/Module/Gimbal/Uav/fsm/pyro_active_state.cpp
+        PYRo/Application/Mission/Uav/pyro_app_thread.cpp
+        #        PYRo/Module/Chassis/Rudder/fsm/pyro_rud_moving_state.cpp
 #        PYRo/Module/Chassis/Rudder/fsm/pyro_rud_braking_state.cpp
 #        PYRo/Module/Chassis/Rudder/fsm/pyro_rud_turning_state.cpp
 

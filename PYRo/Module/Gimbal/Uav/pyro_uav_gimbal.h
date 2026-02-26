@@ -16,9 +16,9 @@ namespace pyro
 //命令定义
 struct gimbal_cmd_t final : cmd_base_t
 {
-    float yaw_delta_angle;
-    float pitch_delta_angle;
-    float roll_delta_angle;
+    float yaw_delta_angle;      //yaw轴目标角度
+    float pitch_delta_angle;    //pitch轴目标角度
+    float roll_delta_angle;     //roll轴目标角度
 
     gimbal_cmd_t()
     :yaw_delta_angle() , pitch_delta_angle(0) , roll_delta_angle(0)
@@ -115,9 +115,9 @@ private:
 
     struct gimbal_ctx_t
     {
-        gimbal_cfg_t gimbal_cfg{};
-        data_ctx_t data_ctx{};
-        correct_imu_ctx_t correct_imu_ctx{};
+        gimbal_cfg_t gimbal_cfg;
+        data_ctx_t data_ctx;
+        correct_imu_ctx_t correct_imu_ctx;
         gimbal_cmd_t *cmd{};
     };
 
