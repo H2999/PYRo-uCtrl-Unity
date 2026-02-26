@@ -1,4 +1,4 @@
-#include "pyro_hybrid_chassis.h"
+#include "Chassis/Hybrid/pyro_hybrid_chassis.h"
 
 namespace pyro
 {

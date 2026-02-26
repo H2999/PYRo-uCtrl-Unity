@@ -245,6 +245,7 @@ target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC
 
         # --- Component ---
         PYRo/Component/CRC
+        PYRo/Component/Shoot
         PYRo/Component/IMU
         PYRo/Component/INS
         PYRo/Component/Motor

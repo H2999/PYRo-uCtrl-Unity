@@ -2,6 +2,7 @@
 #define __PYRO_HYBRID_CHASSIS_H__
 
 #include "pyro_algo_pid.h"
+#include "pyro_core_fsm.h"
 #include "pyro_module_base.h"
 #include "pyro_kin_hybrid.h"
 #include "pyro_motor_base.h"
