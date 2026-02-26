@@ -161,7 +161,7 @@ class supercap_drv_t
     void run_loop_impl();
 
     bool rx_callback(const uint8_t *p_data, uint16_t size,
-                     BaseType_t xHigherPriorityTaskWoken) const;
+                     BaseType_t& xHigherPriorityTaskWoken) const;
 
     static status_t error_check(const rx_packet_t *buf);
     void unpack(const rx_packet_t *buf);

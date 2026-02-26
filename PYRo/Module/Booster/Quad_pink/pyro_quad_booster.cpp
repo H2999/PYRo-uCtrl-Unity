@@ -43,6 +43,8 @@ status_t quad_booster_t::_init()
     // 重置数据
     _ctx.data.last_rotor_rad = 0.0f; // 默认从0开始比较
     _ctx.data.total_trig_rad = 0.0f;
+
+    return PYRO_OK;
 }
 
 float quad_booster_t::_normalize_angle(float angle)

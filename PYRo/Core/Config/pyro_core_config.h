@@ -9,7 +9,7 @@
 #define RC_DEMO_EN         0
 #define MOTOR_DEMO_EN      0
 #define CONTROLLER_DEMO_EN 0
-#define CONTROL_DEMO_EN    1
+#define CONTROL_DEMO_EN    0
 #define IMU_DEMO_EN        0
 #define REFEREE_DEMO_EN    0
 
@@ -41,6 +41,12 @@
 
 #if ROBOT_ID == SENTRY_ID
 
+#define GIMBAL_ID  1
+#define CHASSIS_ID 2
+
+#define BOARD_ID   CHASSIS_ID
+#endif
+#if (ROBOT_ID == HERO_ID) || (ROBOT_ID == SUB_HERO_ID)
 #define GIMBAL_ID  1
 #define CHASSIS_ID 2
 

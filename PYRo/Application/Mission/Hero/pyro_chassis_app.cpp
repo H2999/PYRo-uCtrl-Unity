@@ -4,9 +4,9 @@
 #include "pyro_rc_hub.h"
 #include "pyro_com_canrx.h"
 
-pyro::mec_chassis_t *mec_chassis_ptr             = nullptr;
-pyro::mec_cmd_t *mec_cmd_ptr                     = nullptr;
-pyro::dr16_drv_t::dr16_ctrl_t const *rc_ctrl_ptr = nullptr;
+static pyro::mec_chassis_t *mec_chassis_ptr             = nullptr;
+static pyro::mec_cmd_t *mec_cmd_ptr                     = nullptr;
+static pyro::dr16_drv_t::dr16_ctrl_t const *rc_ctrl_ptr = nullptr;
 
 extern "C"
 {

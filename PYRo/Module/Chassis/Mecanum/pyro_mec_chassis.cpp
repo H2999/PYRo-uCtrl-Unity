@@ -23,7 +23,7 @@ static float _loop_fp32_constrain(float val, float min_val, float max_val)
     return val;
 }
 
-static float _mps_to_rpm(const float mps, const float radius)
+static float mps_to_rpm(const float mps, const float radius)
 {
     if (radius < 1e-4f)
         return 0.0f;
@@ -44,7 +44,7 @@ mec_chassis_t::mec_chassis_t() : module_base_t("mec_chassis")
     _ctx = {};
 }
 
-void mec_chassis_t::_init()
+status_t mec_chassis_t::_init()
 {
     _kinematics          = new mecanum_kin_t(WHEELBASE, TRACK_WIDTH);
 
@@ -74,6 +74,8 @@ void mec_chassis_t::_init()
 
     // 功率控制初始化
     _power_control_init();
+
+    return PYRO_OK;
 }
 
 void mec_chassis_t::_power_control_init()
@@ -218,13 +220,13 @@ void mec_chassis_t::_kinematics_solve()
     // 4. 转 RPM 并分配给电机
     // 注意：右侧电机通常需要反转，取决于具体安装和电机库定义
     _ctx.data.target_wheel_rpm[0] =
-        _mps_to_rpm(wheel_speeds_mps.fl, WHEEL_RADIUS);
+        mps_to_rpm(wheel_speeds_mps.fl, WHEEL_RADIUS);
     _ctx.data.target_wheel_rpm[1] =
-        -_mps_to_rpm(wheel_speeds_mps.fr, WHEEL_RADIUS);
+        -mps_to_rpm(wheel_speeds_mps.fr, WHEEL_RADIUS);
     _ctx.data.target_wheel_rpm[2] =
-        _mps_to_rpm(wheel_speeds_mps.bl, WHEEL_RADIUS);
+        mps_to_rpm(wheel_speeds_mps.bl, WHEEL_RADIUS);
     _ctx.data.target_wheel_rpm[3] =
-        -_mps_to_rpm(wheel_speeds_mps.br, WHEEL_RADIUS);
+        -mps_to_rpm(wheel_speeds_mps.br, WHEEL_RADIUS);
 }
 
 void mec_chassis_t::_chassis_control(mec_context_t *ctx)
