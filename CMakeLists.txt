@@ -100,9 +100,7 @@ add_executable(${CMAKE_PROJECT_NAME}
         PYRo/Component/RC/pyro_rc_hub.cpp
         PYRo/Component/RC/pyro_vt03_rc_drv.cpp
         PYRo/Component/Referee/fifo.c
-        PYRo/Component/Referee/referee.c
-        PYRo/Component/Referee/referee_drv.cpp
-        PYRo/Component/Referee/referee_usart_task.c
+        PYRo/Component/Referee/pyro_referee.cpp
         PYRo/Component/INS/pyro_ins.cpp
         PYRo/Component/Supercap/pyro_supercap_drv.cpp
 
