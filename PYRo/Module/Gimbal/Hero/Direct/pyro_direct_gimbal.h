@@ -1,11 +1,11 @@
-#ifndef __PYRO_DIRECT_GIMBAL_H__
-#define __PYRO_DIRECT_GIMBAL_H__
+#ifndef PYRO_DIRECT_GIMBAL_H
+#define PYRO_DIRECT_GIMBAL_H
 
+#include "pyro_module_base.h"
+#include "pyro_motor_base.h"
 #include "pyro_algo_pid.h"
 #include "pyro_dji_motor_drv.h"
 #include "pyro_dm_motor_drv.h" // 新增 DM 电机驱动
-#include "pyro_module_base.h"
-#include "pyro_motor_base.h"
 
 namespace pyro
 {
@@ -21,11 +21,12 @@ struct direct_gimbal_cmd_t final : public cmd_base_t
     direct_gimbal_cmd_t() : pitch_delta_angle(0.0f), yaw_delta_angle(0.0f) {}
 };
 
+struct direct_gimbal_cfg_t{};
 // =========================================================
 // 2. 云台类
 // =========================================================
 class direct_gimbal_t final
-    : public module_base_t<direct_gimbal_t, direct_gimbal_cmd_t>
+    : public module_base_t<direct_gimbal_t, direct_gimbal_cmd_t,direct_gimbal_cfg_t>
 {
     friend class module_base_t;
 
@@ -34,13 +35,12 @@ class direct_gimbal_t final
     struct data_ctx_t;
     struct gimbal_context_t;
 
-
   private:
     direct_gimbal_t();
     ~direct_gimbal_t() override = default;
 
     // --- 基类接口实现 ---
-    void _init() override;
+    status_t _init() override;
     void _update_feedback() override;
     void _fsm_execute() override;
 
@@ -122,7 +122,7 @@ class direct_gimbal_t final
 
     state_passive_t _state_passive;
     state_active_t _state_active;
-    fsm_t<owner> _main_fsm;
+    fsm_t<owner> _main_fsm{};
 
     // =====================================================
     // 静态配置 (编译器常量)

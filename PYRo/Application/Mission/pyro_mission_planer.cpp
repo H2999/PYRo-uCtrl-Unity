@@ -1,5 +1,6 @@
 #include "cmsis_os.h"
 #include "pyro_core_config.h"
+
 extern "C"
 {
     extern void pyro_init_thread(void *argument);
@@ -21,10 +22,10 @@ extern "C"
 
 #if ROBOT_ID == HERO_ID
 #if BOARD_ID == GIMBAL_ID
-        xTaskCreate(hero_gimbal_init, "pyro_gimbal_init", 512, nullptr,
-                    configMAX_PRIORITIES - 1, nullptr);
-        xTaskCreate(hero_booster_init, "pyro_booster_init", 512, nullptr,
-                    configMAX_PRIORITIES - 1, nullptr);
+        // xTaskCreate(hero_gimbal_init, "pyro_gimbal_init", 512, nullptr,
+        //             configMAX_PRIORITIES - 1, nullptr);
+        // xTaskCreate(hero_booster_init, "pyro_booster_init", 512, nullptr,
+        //             configMAX_PRIORITIES - 1, nullptr);
 #elif BOARD_ID == CHASSIS_ID
         xTaskCreate(hero_chassis_init, "pyro_chassis_init", 512, nullptr,
                     configMAX_PRIORITIES - 1, nullptr);

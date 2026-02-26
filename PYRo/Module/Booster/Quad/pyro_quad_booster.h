@@ -25,13 +25,15 @@ struct quad_booster_cmd_t final : public cmd_base_t
     }
 };
 
+struct quad_booster_cfg_t{};
+
 // =========================================================
 // 2. 四轮发射机构类
 // =========================================================
 class quad_booster_t final
-    : public module_base_t<quad_booster_t, quad_booster_cmd_t>
+    : public module_base_t<quad_booster_t, quad_booster_cmd_t, quad_booster_cfg_t>
 {
-    friend class module_base_t<quad_booster_t, quad_booster_cmd_t>;
+    friend class module_base_t<quad_booster_t, quad_booster_cmd_t, quad_booster_cfg_t>;
     friend class jcom_drv_t;
 
     struct motor_ctx_t;
@@ -48,7 +50,7 @@ class quad_booster_t final
     ~quad_booster_t() override = default;
 
     // --- 接口实现 ---
-    void _init() override;
+    status_t _init() override;
     void _update_feedback() override;
     void _fsm_execute() override;
 

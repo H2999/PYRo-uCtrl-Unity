@@ -106,7 +106,7 @@ class supercap_drv_t
 
       protected:
         // Delegate FreeRTOS hooks back to the owner driver
-        void init() override;
+        status_t init() override;
         void run_loop() override;
 
       private:

@@ -22,6 +22,7 @@ struct yaw_cmd_t : cmd_base_t
     {
     }
 };
+
 struct yaw_cfg_t
 {
     struct motor_cfg_t
@@ -61,7 +62,7 @@ class yaw_t final : public module_base_t<yaw_t, yaw_cmd_t, yaw_cfg_t>
     ~yaw_t() override = default;
 
     // --- 基类接口 ---
-    void _init() override;
+    status_t _init() override;
     void _update_feedback() override;
     void _fsm_execute() override;
 

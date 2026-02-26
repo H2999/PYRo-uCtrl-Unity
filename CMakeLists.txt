@@ -69,7 +69,6 @@ add_executable(${CMAKE_PROJECT_NAME}
         PYRo/Core/ETL/map.cpp
         PYRo/Core/Lock/pyro_mutex.cpp
         PYRo/Core/Lock/pyro_rw_lock.cpp
-        PYRo/Core/Task/pyro_task.cpp
         PYRo/Core/Memory/pyro_core_dma_heap.c
         PYRo/Core/Memory/pyro_core_mem.cpp
         PYRo/Core/Task/pyro_task.cpp
@@ -144,14 +143,18 @@ add_executable(${CMAKE_PROJECT_NAME}
         PYRo/Module/pyro_module_base.tpp
 
         ## --- Chassis ---
-        #        PYRo/Module/Chassis/Mecanum/pyro_mec_chassis.cpp
-        #        PYRo/Module/Chassis/Mecanum/fsm/pyro_mec_passive_state.cpp
-        #        PYRo/Module/Chassis/Mecanum/fsm/pyro_mec_active_state.cpp
+        #       PYRo/Module/Chassis/Mecanum/pyro_mec_chassis.cpp
+        #       PYRo/Module/Chassis/Mecanum/fsm/pyro_mec_passive_state.cpp
+        #       PYRo/Module/Chassis/Mecanum/fsm/pyro_mec_active_state.cpp
 
         ## --- Gimbal ---
-        #        PYRo/Module/Gimbal/Hero/Direct/pyro_direct_gimbal.cpp
-        #        PYRo/Module/Gimbal/Hero/Direct/fsm/pyro_direct_active_state.cpp
-        #        PYRo/Module/Gimbal/Hero/Direct/fsm/pyro_direct_passive_state.cpp
+               PYRo/Module/Gimbal/Hero/Direct/pyro_direct_gimbal.cpp
+               PYRo/Module/Gimbal/Hero/Direct/fsm/pyro_direct_active_state.cpp
+               PYRo/Module/Gimbal/Hero/Direct/fsm/pyro_direct_passive_state.cpp
+
+        PYRo/Module/Gimbal/Uav/pyro_uav_gimbal.cpp
+        PYRo/Module/Gimbal/Uav/fsm/pyro_active_state.cpp
+        PYRo/Module/Gimbal/Uav/fsm/pyro_passive_state.cpp
 
         ## --- Booster ---
         # PYRo/Module/Booster/Quad/pyro_quad_booster.cpp
@@ -159,6 +162,8 @@ add_executable(${CMAKE_PROJECT_NAME}
         # PYRo/Module/Booster/Quad/fsm/pyro_quad_active_state.cpp
         # PYRo/Module/Booster/Quad/fsm/pyro_quad_homing_state.cpp
         # PYRo/Module/Booster/Quad/fsm/pyro_quad_ready_state.cpp
+
+        PYRo/Module/Booster/Uav_booster/Uav_booster.cpp
 
         # --- Debug ---
         PYRo/Debug/Debug_task.cpp
@@ -177,6 +182,20 @@ add_executable(${CMAKE_PROJECT_NAME}
         PYRo/Module/Chassis/Rudder/fsm/pyro_rud_moving_state.cpp
         PYRo/Module/Chassis/Rudder/fsm/pyro_rud_braking_state.cpp
         PYRo/Module/Chassis/Rudder/fsm/pyro_rud_turning_state.cpp
+        PYRo/Module/Booster/Quad/pyro_quad_booster.cpp
+        PYRo/Module/Booster/Quad/fsm/pyro_quad_active_state.cpp
+        PYRo/Module/Booster/Quad/fsm/pyro_quad_busy_state.cpp
+        PYRo/Module/Booster/Quad/fsm/pyro_quad_homing_state.cpp
+        PYRo/Module/Booster/Quad/fsm/pyro_quad_interim_state.cpp
+        PYRo/Module/Booster/Quad/fsm/pyro_quad_passive_state.cpp
+        PYRo/Module/Booster/Quad/fsm/pyro_quad_ready_state.cpp
+        PYRo/Module/Booster/Quad/fsm/pyro_quad_stall_state.cpp
+        PYRo/Module/Gimbal/Uav/pyro_uav_gimbal.cpp
+        PYRo/Module/Gimbal/Uav/pyro_uav_gimbal.h
+        PYRo/Module/Gimbal/Uav/fsm/pyro_active_state.cpp
+        PYRo/Module/Gimbal/Uav/fsm/pyro_passive_state.cpp
+        PYRo/Module/Booster/Uav_booster/Uav_booster.cpp
+        PYRo/Module/Booster/Uav_booster/Uav_booster.h
         #        PYRo/Application/Mission/Hero/pyro_chassis_app.cpp
         # PYRo/Module/Booster/Quad/fsm/pyro_quad_stall_state.cpp
         # PYRo/Module/Booster/Quad/fsm/pyro_quad_interim_state.cpp
@@ -234,8 +253,8 @@ target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC
         PYRo/Module/Chassis/Mecanum
         PYRo/Module/Chassis/Rudder
         PYRo/Module/Yaw
-        #        PYRo/Module/Gimbal/Hero/Direct
-        # PYRo/Module/Booster/Quad
+        PYRo/Module/Gimbal/Hero/Direct
+        PYRo/Module/Booster/Quad
 
         # --- Communication ---
         PYRo/Communication

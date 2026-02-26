@@ -10,7 +10,7 @@ quad_booster_t::quad_booster_t() : module_base_t("quad_booster")
     _ctx = {};
 }
 
-void quad_booster_t::_init()
+status_t quad_booster_t::_init()
 {
     // 1. 摩擦轮电机初始化
     _ctx.motor.fric_wheels[0] =

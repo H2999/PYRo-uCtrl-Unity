@@ -28,7 +28,7 @@ option(FASTBUILD "Faster build for Cortex-M. Disable it for A" OFF)
 #
 ###########################
 
-add_library(CMSISDSP STATIC)
+add_library(CMSISDSP STATIC "")
 
 include(BasicMathFunctions/Config.cmake)
 

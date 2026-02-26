@@ -13,7 +13,7 @@ direct_gimbal_t::direct_gimbal_t() : module_base_t("direct_gimbal")
     _ctx = {};
 }
 
-void direct_gimbal_t::_init()
+status_t direct_gimbal_t::_init()
 {
     // 1. 初始化电机
 
@@ -119,7 +119,7 @@ void direct_gimbal_t::_fsm_execute()
 
     if (cmd_base_t::mode_t::ACTIVE == _ctx.cmd->mode)
         _main_fsm.change_state(&_state_active);
-    else if (cmd_base_t::mode_t::PASSIVE == _ctx.cmd->mode)
+    else if (cmd_base_t::mode_t::ZERO_FORCE == _ctx.cmd->mode)
         _main_fsm.change_state(&_state_passive);
 
     _main_fsm.execute(this);

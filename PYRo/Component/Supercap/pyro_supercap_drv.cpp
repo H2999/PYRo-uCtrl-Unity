@@ -18,7 +18,7 @@ namespace pyro
 /* Inner Task Implementation                                                  */
 /* ========================================================================== */
 
-void supercap_drv_t::supercap_task_t::init()
+status_t supercap_drv_t::supercap_task_t::init()
 {
     if (_owner)
     {

@@ -29,7 +29,7 @@ rud_chassis_t::rud_chassis_t()
     debug_data = {};
 }
 
-void rud_chassis_t::_init()
+status_t rud_chassis_t::_init()
 {
     _kinematics                             = new rudder_kin_t(0.36f, 0.36f);
     _ctx.rud_config                         = _config;
