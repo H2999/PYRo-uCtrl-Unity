@@ -126,6 +126,7 @@ class rud_chassis_t final
     rud_ctx_t _ctx;
     debug_ctx_t debug_data;
 
+    // --- FSM 状态定义 ---
     using owner = rud_chassis_t;
 
     struct state_passive_t : public state_t<owner>

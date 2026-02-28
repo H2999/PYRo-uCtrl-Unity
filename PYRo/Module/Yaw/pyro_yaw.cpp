@@ -65,7 +65,16 @@ float yaw_t::get_yaw_error() const
 
 status_t yaw_t::_init()
 {
+    if (_module_deps.motor.yaw == nullptr) {
+        // 电机指针未初始化，返回错误码（根据你的 status_t 定义调整）
+        return PYRO_ERROR; // 或 STATUS_ERROR
+    }
+    if (_module_deps.pid.yaw_pos_pid == nullptr || _module_deps.pid.yaw_spd_pid == nullptr) {
+        // PID 指针未初始化，返回错误
+        return PYRO_ERROR;
+    }
     _ctx.yaw_config        = _module_deps;
+    return PYRO_OK;
 }
 
 void yaw_t::_update_feedback()
