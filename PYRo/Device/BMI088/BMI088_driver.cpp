@@ -14,7 +14,7 @@
 #include "BMI088_reg.h"
 #include "BMI088_middleware.h"
 #include "pyro_dwt_drv.h"
-#include <math.h>
+#include <cmath>
 
 float BMI088_ACCEL_SEN = BMI088_ACCEL_6G_SEN;
 float BMI088_GYRO_SEN = BMI088_GYRO_2000_SEN;
@@ -132,7 +132,7 @@ uint8_t BMI088_init(SPI_HandleTypeDef *bmi088_SPI, uint8_t calibrate, IMU_Data_t
     return error;
 }
 
-//校准零漂
+//校准锟斤拷漂
 void Calibrate_MPU_Offset(IMU_Data_t *bmi088)
 {
     static float startTime;

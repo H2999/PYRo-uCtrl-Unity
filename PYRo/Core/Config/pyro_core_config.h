@@ -1,9 +1,6 @@
 #ifndef __PYRO_CORE_CONFIG_H__
 #define __PYRO_CORE_CONFIG_H__
 
-// #define DEMO_MODE  1
-// #define DEBUG_MODE 0
-
 #if DEMO_MODE
 
 #define RC_DEMO_EN         0
@@ -64,9 +61,11 @@
 
 #define REFEREE_UART PYRO_UART1
 
-#define VOFA_DEBUG_PORT PYRO_UART10
-#define JCOM_DEBUG_PORT PYRO_UART7
+// #define VOFA_DEBUG_PORT PYRO_UART10
+// #define JCOM_DEBUG_PORT PYRO_UART7
 
-#define ROBOT_ID UAV_ID
+#define VOFA_DEBUG_PORT PYRO_UART7
+#define JCOM_DEBUG_PORT PYRO_UART10
+
 
 #endif // PYRO_PYRO_CORE_CONFIG_H

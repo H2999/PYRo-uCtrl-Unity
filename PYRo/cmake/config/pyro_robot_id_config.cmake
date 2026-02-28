@@ -317,7 +317,7 @@ add_custom_target(echo_robot_id ALL
         COMMAND ${CMAKE_COMMAND} -E echo ""
         COMMAND ${CMAKE_COMMAND} -E echo "${LINE_CONFIG}"
         COMMAND ${CMAKE_COMMAND} -E echo "${LINE_DIV}"
-        COMMAND cmd /c "${SCRIPT_PATH}" "${ART_DIR}"
+        # COMMAND cmd /c "${SCRIPT_PATH}" "${ART_DIR}"
         COMMAND ${CMAKE_COMMAND} -E echo "${LINE_DIV}"
         COMMAND ${CMAKE_COMMAND} -E echo ""
         COMMAND ${CMAKE_COMMAND} -E echo "${LINE_WARN_CONTENT}"

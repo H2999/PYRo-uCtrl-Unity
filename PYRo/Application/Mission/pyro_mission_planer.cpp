@@ -21,10 +21,8 @@ extern "C"
         xTaskCreate(pyro_init_thread, "pyro_init_thread", 512, nullptr,
                     configMAX_PRIORITIES - 1, nullptr);
 
-#if ROBOT_ID == UAV_ID
         xTaskCreate(pyro_app_init_thread, "pyro_app_init_thread", 512, nullptr,
             configMAX_PRIORITIES - 1,nullptr);
-#endif
 
 #if (ROBOT_ID == HERO_ID) || (ROBOT_ID == SUB_HERO_ID)
 #if BOARD_ID == GIMBAL_ID

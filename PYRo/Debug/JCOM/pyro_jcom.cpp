@@ -1,12 +1,12 @@
 #include "pyro_jcom.h"
 #include "pyro_core_dma_heap.h"
-#include "pyro_uav_gimbal.h"
 #include "task.h"
 #include "cstring"
 #include "pyro_core_config.h"
+#include "Gimbal/Uav/pyro_uav_gimbal.h"
 
 
-extern pyro::gimbal_t *gimbal_ptr;
+extern pyro::uav_gimbal_t *gimbal_ptr;
 
 namespace pyro
 {
@@ -96,25 +96,18 @@ void jcom_drv_t::send()
 
 void jcom_drv_t::thread()
 {
-    // add_data(&gimbal_ptr->gimbal_ctx.data._target_yaw_speed);
-    // add_data(&gimbal_ptr->gimbal_ctx.data._current_yaw_speed);
-
     add_data(&gimbal_ptr->gimbal_ctx.data._target_yaw_angle);
-    add_data(&gimbal_ptr->gimbal_ctx.data._current_yaw_angle);
+    add_data(&gimbal_ptr->gimbal_ctx.data.correct_imu_ctx.correct_yaw_angle);
+    add_data(&gimbal_ptr->gimbal_ctx.data.correct_imu_ctx.yaw_offset);
 
-    add_data(&gimbal_ptr->gimbal_ctx.data._target_pitch_angle);
-    add_data(&gimbal_ptr->gimbal_ctx.data._current_pitch_angle);
+    // add_data(&gimbal_ptr->gimbal_ctx.data._target_pitch_angle);
+    // add_data(&gimbal_ptr->gimbal_ctx.data.correct_imu_ctx.correct_pitch_angle);
+    // add_data(&gimbal_ptr->gimbal_ctx.data.correct_imu_ctx.pitch_offset);
+    //
+    // add_data(&gimbal_ptr->gimbal_ctx.data._target_roll_angle);
+    // add_data(&gimbal_ptr->gimbal_ctx.data.correct_imu_ctx.correct_roll_angle);
+    // add_data(&gimbal_ptr->gimbal_ctx.data.correct_imu_ctx.roll_offset);
 
-    add_data(&gimbal_ptr->gimbal_ctx.data._target_pitch_speed);
-    add_data(&gimbal_ptr->gimbal_ctx.data._current_pitch_speed);
-
-    add_data(&gimbal_ptr->gimbal_ctx.data._target_roll_angle);
-    add_data(&gimbal_ptr->gimbal_ctx.data._current_roll_angle);
-
-    add_data(&gimbal_ptr->gimbal_ctx.data.yaw_offset);
-    add_data(&gimbal_ptr->gimbal_ctx.data.correct_yaw_angle);
-    // add_data(&gimbal_ptr->gimbal_ctx.data._target_roll_speed);
-    // add_data(&gimbal_ptr->gimbal_ctx.data._current_roll_speed);
     while (true)
     {
         update_data();

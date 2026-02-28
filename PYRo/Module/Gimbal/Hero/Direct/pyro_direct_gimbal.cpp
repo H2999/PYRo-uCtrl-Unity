@@ -121,7 +121,7 @@ void direct_gimbal_t::_fsm_execute()
 
     if (cmd_base_t::mode_t::ACTIVE == _ctx.cmd->mode)
         _main_fsm.change_state(&_state_active);
-    else if (cmd_base_t::mode_t::ZERO_FORCE == _ctx.cmd->mode)
+    else if (cmd_base_t::mode_t::PASSIVE == _ctx.cmd->mode)
         _main_fsm.change_state(&_state_passive);
 
     _main_fsm.execute(this);

@@ -1,13 +1,12 @@
-#include "pyro_gimbal_task.h"
 #include "pyro_module_base.h"
-#include "pyro_mutex.h"
 #include "pyro_rc_hub.h"
+#include "Gimbal/Uav/pyro_uav_gimbal.h"
 
-pyro::gimbal_t *gimbal_ptr                       = nullptr;
-pyro::gimbal_cmd_t *gimbal_cmd_ptr               = nullptr;
+pyro::uav_gimbal_t *gimbal_ptr                       = nullptr;
+pyro::uav_gimbal_cmd_t *gimbal_cmd_ptr               = nullptr;
 pyro::dr16_drv_t::dr16_ctrl_t const *rc_ctrl_ptr = nullptr;
 
-static constexpr float rc_sensitivity = 0.0035f;
+static constexpr float rc_sensitivity = 0.003f;
 
 extern "C"
 {
@@ -21,7 +20,7 @@ extern "C"
         //如果右侧拨码拨到上面 就进入无力模式
         if (pyro::dr16_drv_t::sw_state_t::SW_UP == p_ctrl->rc.s_r.state)
         {
-            gimbal_cmd_ptr->mode = pyro::cmd_base_t::mode_t::ZERO_FORCE;
+            gimbal_cmd_ptr->mode = pyro::cmd_base_t::mode_t::PASSIVE;
             gimbal_cmd_ptr->yaw_delta_angle     = 0;
             gimbal_cmd_ptr->pitch_delta_angle   = 0;
             gimbal_cmd_ptr->roll_delta_angle    = 0;
@@ -29,8 +28,8 @@ extern "C"
         }
         gimbal_cmd_ptr->mode = pyro::cmd_base_t::mode_t::ACTIVE;
 
-        gimbal_cmd_ptr->yaw_delta_angle   = p_ctrl->rc.ch_ry * rc_sensitivity;
-        gimbal_cmd_ptr->pitch_delta_angle = p_ctrl->rc.ch_rx * rc_sensitivity;
+        gimbal_cmd_ptr->yaw_delta_angle   = p_ctrl->rc.ch_rx * rc_sensitivity;
+        gimbal_cmd_ptr->pitch_delta_angle = p_ctrl->rc.ch_ry * rc_sensitivity;
         gimbal_cmd_ptr->roll_delta_angle  = p_ctrl->rc.ch_lx * rc_sensitivity;
     }
 
@@ -48,8 +47,8 @@ extern "C"
 
     void pyro_app_init_thread(void *argument)
     {
-        gimbal_cmd_ptr     = new pyro::gimbal_cmd_t();
-        gimbal_ptr = pyro::gimbal_t::instance();
+        gimbal_cmd_ptr     = new pyro::uav_gimbal_cmd_t();
+        gimbal_ptr = pyro::uav_gimbal_t::instance();
         rc_ctrl_ptr        = static_cast<pyro::dr16_drv_t::dr16_ctrl_t const *>(
             pyro::rc_hub_t::get_instance(pyro::rc_hub_t::DR16)->read());
         xTaskCreate(start_app_thread, "start_app_thread", 256, nullptr,
