@@ -8,12 +8,13 @@
 namespace pyro
 {
 
+//命令模板
 struct uav_booster_cmd_t final : public cmd_base_t
 {
-    bool fric_on;     // 摩擦轮开启
-    bool trigger_enable; // 拨弹开启
-    float target_fric1_speed;  // 第一级摩擦轮目标转速
-    float target_fric2_speed;  // 第二级摩擦轮目标转速
+    bool fric_on;               // 摩擦轮开启
+    bool trigger_enable;        // 拨弹开启
+    float target_fric1_speed;   // 第一级摩擦轮目标转速
+    float target_fric2_speed;   // 第二级摩擦轮目标转速
 
     uav_booster_cmd_t()
         : fric_on(false), trigger_enable(false), target_fric1_speed(0), target_fric2_speed(0)
@@ -21,6 +22,7 @@ struct uav_booster_cmd_t final : public cmd_base_t
     }
 };
 
+//cfg模板 主要存放的是在开始的时候配置一次的变量 如电机和pid
 struct uav_booster_cfg_t
 {
     struct motor_cfg_t
@@ -40,13 +42,14 @@ struct uav_booster_cfg_t
     pid_cfg_t pid_cfg;
 };
 
-class uav_booster_t : public pyro::module_base_t<uav_booster_t,uav_booster_cmd_t,uav_booster_cfg_t>
+//具体实现的模板类 继承自module模块
+class uav_booster_t : public module_base_t<uav_booster_t,uav_booster_cmd_t,uav_booster_cfg_t>
 {
     friend class module_base_t<uav_booster_t, uav_booster_cmd_t, uav_booster_cfg_t>;
-    friend class jcom_drv_t;
+    friend class jcom_drv_t;    //调试用
 
-    struct data_ctx_t;
-    struct booster_ctx_t;
+    struct data_ctx_t;          //过程中需要用到的数据
+    struct booster_ctx_t;       //总的数据
 
 public:
     uav_booster_t(const uav_booster_t &) = delete;
@@ -70,15 +73,18 @@ private:
 
     struct data_ctx_t
     {
+        //当前
         float current_fric_speed[2]{};
         float current_trigger_angle{0};
         float current_trigger_speed{};
         float current_trigger_torque{0};
 
+        //目标
         float target_fric_speed[2]{};
         float target_trigger_angle{0};
         float target_trigger_speed{0};
 
+        //输出扭矩
         float fric_output_torque[2]{};
         float trigger_output_torque{0};
     };
@@ -104,21 +110,6 @@ private:
 
     struct fsm_active_t final : public fsm_t<uav_booster_t>
     {
-        // struct state_homing_t final : public state_t<owner>
-        // {
-        //     void enter(uav_booster_t *owner) override;
-        //     void execute(uav_booster_t *owner) override;
-        //     void exit(uav_booster_t *owner) override;
-        //
-        // private:
-        //     float _homing_turnback_start_time{0.0f};
-        // };
-        // struct state_interim_t final : public state_t<uav_booster_t>
-        // {
-        //     void enter(uav_booster_t *owner) override;
-        //     void execute(uav_booster_t *owner) override;
-        //     void exit(uav_booster_t *owner) override;
-        // };
         struct ready_state_t final : public state_t<uav_booster_t>
         {
             void enter(uav_booster_t *owner) override;
@@ -142,8 +133,6 @@ private:
         void on_exit(uav_booster_t *owner) override;
 
     private:
-        // state_homing_t _homing_state;
-        // state_interim_t _interim_state;
         ready_state_t ready_state;
         firing_state_t busy_state;
         stall_state_t stall_state;

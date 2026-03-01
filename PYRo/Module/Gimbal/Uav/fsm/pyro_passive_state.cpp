@@ -16,13 +16,6 @@ void uav_gimbal_t::state_passive_t::enter(uav_gimbal_t *owner)
     owner->gimbal_ctx.motor.yaw_motor->disable();
     owner->gimbal_ctx.motor.pitch_motor->disable();
     owner->gimbal_ctx.motor.roll_motor->disable();
-
-    //读取刚上电时电机的角度作为偏移量 用户后续加上IMU读取出来的角度得到绝对编码
-    owner->gimbal_ctx.data.correct_imu_ctx.yaw_offset = owner->gimbal_ctx.motor.yaw_motor->get_current_position();
-    owner->gimbal_ctx.data._target_yaw_angle = owner->gimbal_ctx.data.correct_imu_ctx.correct_yaw_angle;
-
-    owner->gimbal_ctx.data.correct_imu_ctx.pitch_offset = owner->gimbal_ctx.motor.pitch_motor->get_current_position();
-    owner->gimbal_ctx.data.correct_imu_ctx.roll_offset = owner->gimbal_ctx.motor.roll_motor->get_current_position();
 }
 
 void uav_gimbal_t::state_passive_t::execute(uav_gimbal_t *owner)

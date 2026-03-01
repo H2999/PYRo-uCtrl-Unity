@@ -6,12 +6,11 @@
 namespace pyro
 {
 uav_gimbal_t::uav_gimbal_t()
-    : module_base_t<uav_gimbal_t, uav_gimbal_cmd_t,uav_gimbal_cfg_t>("gimbal")
+    : module_base_t("gimbal")
 {
     gimbal_ctx = {};
     gimbal_ins = ins_drv_t::get_instance();
     gimbal_ins->init();
-    main_fsm.change_state(&state_passive);
 }
 
 status_t uav_gimbal_t::_init()
@@ -28,19 +27,19 @@ status_t uav_gimbal_t::_init()
     static_cast<dm_motor_drv_t *>(gimbal_ctx.motor.pitch_motor)->set_rotate_range(-20, 20);
     static_cast<dm_motor_drv_t *>(gimbal_ctx.motor.pitch_motor)->set_torque_range(-10, 10);
 
-    gimbal_ctx.pid.yaw_position_pid = new pid_t(6.0f,0.0012,0,1.0f,
+    gimbal_ctx.pid.yaw_position_pid = new pid_t(12.5f,0.0f,0.0f,1.0f,
                 3.0f,200,100,4);
-    gimbal_ctx.pid.pitch_position_pid = new pid_t(1.0f,0,0,0.8f,
+    gimbal_ctx.pid.pitch_position_pid = new pid_t(4.5f,0.0f,0.0f,1.0f,
                 3.0f,200,10,4);
-    gimbal_ctx.pid.roll_position_pid = new pid_t(1.0f,0,0,3.0f,
+    gimbal_ctx.pid.roll_position_pid = new pid_t(3.8f,0.0005f,0.0007f,3.0f,
                 3.0f,200,10,4);
 
-    gimbal_ctx.pid.yaw_speed_pid = new pid_t(0.82f,0.0007,0.0005,0.8,
-                0.5f,300,150,4);
-    gimbal_ctx.pid.pitch_speed_pid = new pid_t(0.58f,0.0005,0.0004,1.0f,
-                0.8f,380,270,4);
-    gimbal_ctx.pid.roll_speed_pid = new pid_t(0.8f,0,0,1.0f,
-                0.3f,200,100,4);
+    gimbal_ctx.pid.yaw_speed_pid = new pid_t(0.85f,0.0085f,0.0005f,0.8f,
+                0.5f,260,150,4);
+    gimbal_ctx.pid.pitch_speed_pid = new pid_t(0.4f,0.0008f,0.0008f,2.0f,
+                3.0f,230,180,4);
+    gimbal_ctx.pid.roll_speed_pid = new pid_t(0.5f,0.0004f,0.0f,0.8f,
+                3.0f,200,100,4);
 
     return PYRO_OK;
 }
@@ -59,6 +58,10 @@ void uav_gimbal_t::_update_feedback()
     gimbal_ins->get_gyro_b(&gimbal_ctx.data._current_yaw_speed,
                                           &gimbal_ctx.data._current_pitch_speed,
                                           &gimbal_ctx.data._current_roll_speed);
+
+    gimbal_ctx.data.pitch_motor_angle = gimbal_ctx.motor.pitch_motor->get_current_position();
+    gimbal_ctx.data.roll_motor_angle = gimbal_ctx.motor.roll_motor->get_current_position();
+    gimbal_ctx.data.yaw_motor_angle = gimbal_ctx.motor.yaw_motor->get_current_position();
 
     // gimbal_ctx.data._current_yaw_angle = gimbal_ctx.motor.yaw_motor->get_current_position();
     //gimbal_ctx.data._current_pitch_angle = gimbal_ctx.motor.pitch_motor->get_current_position();
@@ -86,10 +89,12 @@ void uav_gimbal_t::gimbal_control(gimbal_ctx_t *ctx)
     //注意这里 IMU和电机的角度减少的方向是不同的 云台中IMU逆时针是角度减少
     //电机顺时针的时候角度减少 所以要注意目标角度 当前角度 输出扭矩的正负号
 
-    //绝对编码就等于  -读取出来的角度 + 偏移量       加"-"是因为IMU和电机实际角度变化方向相反 这样从IMU中读取出来的角度也是绝对编码了 可以进行机械限位了
+    //用IMU读取出来的角度加上偏移量得到 加上offset的角度
     ctx->data.correct_imu_ctx.correct_yaw_angle = - ctx->data._current_yaw_angle + ctx->data.correct_imu_ctx.yaw_offset;
-    ctx->data.correct_imu_ctx.correct_pitch_angle = - ctx->data._current_pitch_angle + ctx->data.correct_imu_ctx.pitch_offset;
-    ctx->data.correct_imu_ctx.correct_roll_angle = - ctx->data._current_roll_angle + ctx->data.correct_imu_ctx.roll_offset;
+
+    //pitch轴和roll轴有重力辅助矫正角度 读出来的数据就是和用电机读出来的数据相同
+    ctx->data.correct_imu_ctx.correct_pitch_angle = - ctx->data._current_pitch_angle;
+    ctx->data.correct_imu_ctx.correct_roll_angle = - ctx->data._current_roll_angle;
 
     //对角度进行归一化
     if (ctx->data.correct_imu_ctx.correct_yaw_angle > PI)
@@ -105,29 +110,34 @@ void uav_gimbal_t::gimbal_control(gimbal_ctx_t *ctx)
              ctx->data._target_yaw_angle, ctx->data.correct_imu_ctx.correct_yaw_angle);
 
     ctx->data._target_pitch_speed = ctx->pid.pitch_position_pid->calculate(
-            ctx->data._target_pitch_angle,ctx->data.correct_imu_ctx.correct_pitch_angle);
+            ctx->data._target_pitch_angle, ctx->data.correct_imu_ctx.correct_pitch_angle);
 
     ctx->data._target_roll_speed = ctx->pid.roll_position_pid->calculate(
             ctx->data._target_roll_angle,ctx->data.correct_imu_ctx.correct_roll_angle);
 
     //读取出来的速度和电机读取出来的也是反向的 所以也要加个负号 这样最后算出来的输出扭矩才是正确的
     ctx->data._output_yaw_torque = ctx->pid.yaw_speed_pid->calculate(
-            ctx->data._target_yaw_speed,   - ctx->data._current_yaw_speed);
+            ctx->data._target_yaw_speed,- ctx->data._current_yaw_speed);
 
     ctx->data._output_pitch_torque = ctx->pid.pitch_speed_pid->calculate(
-            ctx->data._target_pitch_speed, - ctx->data._current_pitch_speed);
+            ctx->data._target_pitch_speed,- ctx->data._current_pitch_speed);
+
+    // if (ctx->data._target_pitch_angle < 0)
+    // {
+    //     ctx->data._output_pitch_torque += 0.005f;
+    // }
 
     ctx->data._output_roll_torque = ctx->pid.roll_speed_pid->calculate(
-            ctx->data._target_roll_speed, - ctx->data._current_roll_speed);
+            ctx->data._target_roll_speed,- ctx->data._current_roll_speed);
 }
 
 void uav_gimbal_t::send_motor_command(const gimbal_ctx_t *ctx)
 {
-    ctx->motor.yaw_motor->send_torque(ctx->data._output_yaw_torque);
+     ctx->motor.yaw_motor->send_torque(ctx->data._output_yaw_torque);
 
-    ctx->motor.pitch_motor->send_torque(ctx->data._output_pitch_torque);
+     // ctx->motor.pitch_motor->send_torque(ctx->data._output_pitch_torque);
 
-    ctx->motor.roll_motor->send_torque(ctx->data._output_roll_torque);
+     // ctx->motor.roll_motor->send_torque(ctx->data._output_roll_torque);
 }
 
 }

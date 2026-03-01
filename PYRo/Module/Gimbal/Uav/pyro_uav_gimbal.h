@@ -94,10 +94,10 @@ private:
         float _output_yaw_torque{};
         float _output_pitch_torque{};
         float _output_roll_torque{};
-        //矫正后的角度
-        float correct_yaw_angle{};
-        float correct_pitch_angle{};
-        float correct_roll_angle{};
+
+        float pitch_motor_angle{};
+        float roll_motor_angle{};
+        float yaw_motor_angle{};
 
         struct correct_imu_ctx_t
         {
@@ -146,11 +146,13 @@ private:
     static constexpr float yaw_max_value = 2.3f;
     static constexpr float yaw_min_value = -0.95f;
 
-    static constexpr float pitch_max_value = 0.23f;
-    static constexpr float pitch_min_value = -0.35f;
+    //总是要比从电机读取的机械限位要大一点 也就是遥控器接收到的值大一点 才能符合真的限位
+    //只有pitch轴和roll轴这样
+    static constexpr float pitch_max_value = 0.3f;
+    static constexpr float pitch_min_value = -0.5f;
 
-    static constexpr float roll_max_value = 0.2f;
-    static constexpr float roll_min_value = -0.45f;
+    static constexpr float roll_max_value = 0.4f;
+    static constexpr float roll_min_value = -0.6f;
 };
 }
 

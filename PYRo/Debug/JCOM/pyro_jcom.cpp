@@ -96,17 +96,32 @@ void jcom_drv_t::send()
 
 void jcom_drv_t::thread()
 {
-    add_data(&gimbal_ptr->gimbal_ctx.data._target_yaw_angle);
-    add_data(&gimbal_ptr->gimbal_ctx.data.correct_imu_ctx.correct_yaw_angle);
-    add_data(&gimbal_ptr->gimbal_ctx.data.correct_imu_ctx.yaw_offset);
-
-    // add_data(&gimbal_ptr->gimbal_ctx.data._target_pitch_angle);
-    // add_data(&gimbal_ptr->gimbal_ctx.data.correct_imu_ctx.correct_pitch_angle);
-    // add_data(&gimbal_ptr->gimbal_ctx.data.correct_imu_ctx.pitch_offset);
+    // add_data(&gimbal_ptr->gimbal_ctx.data._target_yaw_angle);
+    // add_data(&gimbal_ptr->gimbal_ctx.data.correct_imu_ctx.correct_yaw_angle);
+    // add_data(&gimbal_ptr->gimbal_ctx.data.correct_imu_ctx.yaw_offset);
     //
     // add_data(&gimbal_ptr->gimbal_ctx.data._target_roll_angle);
     // add_data(&gimbal_ptr->gimbal_ctx.data.correct_imu_ctx.correct_roll_angle);
     // add_data(&gimbal_ptr->gimbal_ctx.data.correct_imu_ctx.roll_offset);
+    // add_data(&gimbal_ptr->gimbal_ctx.data._current_roll_angle);
+    // add_data(&gimbal_ptr->gimbal_ctx.data.roll_motor_angle);
+    //
+    // add_data(&gimbal_ptr->gimbal_ctx.data._target_pitch_angle);
+    // add_data(&gimbal_ptr->gimbal_ctx.data.correct_imu_ctx.correct_pitch_angle);
+    // add_data(&gimbal_ptr->gimbal_ctx.data.correct_imu_ctx.pitch_offset);
+    // add_data(&gimbal_ptr->gimbal_ctx.data._current_pitch_angle);
+    // add_data(&gimbal_ptr->gimbal_ctx.data.pitch_motor_angle);
+    //
+    // add_data(&gimbal_ptr->gimbal_ctx.data._current_yaw_angle);
+    // add_data(&gimbal_ptr->gimbal_ctx.data.yaw_motor_angle);
+
+    // add_data(&gimbal_ptr->gimbal_ctx.data._target_yaw_angle);
+    // add_data(&gimbal_ptr->gimbal_ctx.data._current_yaw_angle);
+
+    add_data(&gimbal_ptr->gimbal_ctx.data.roll_motor_angle);
+    add_data(&gimbal_ptr->gimbal_ctx.data.correct_imu_ctx.correct_roll_angle);
+    add_data(&gimbal_ptr->gimbal_ctx.data._target_roll_angle);
+
 
     while (true)
     {

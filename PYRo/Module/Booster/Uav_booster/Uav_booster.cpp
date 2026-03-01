@@ -16,8 +16,10 @@ status_t uav_booster_t::_init()
 
     booster_ctx.cfg.motor_cfg.trigger_wheel = new dji_m3508_motor_drv_t(dji_motor_tx_frame_t::id_3,can_hub_t::can2);
 
-    booster_ctx.cfg.pid_cfg.fric_pid[0] = new pid_t(6.40f, 0.02f, 0.02f, 2.5f, 20, 320, 80, 4);
-    booster_ctx.cfg.pid_cfg.fric_pid[1] = new pid_t(6.968f, 0.02f, 0.02f, 2.5f, 20, 320, 80, 4);
+    booster_ctx.cfg.pid_cfg.fric_pid[0] = new pid_t(6.40f, 0.02f, 0.02f,
+        2.5f, 20, 320, 80, 4);
+    booster_ctx.cfg.pid_cfg.fric_pid[1] = new pid_t(6.9f, 0.02f, 0.02f,
+        2.5f, 20, 320, 80, 4);
 
     booster_ctx.cfg.pid_cfg.trigger_pos_pid =
         new pid_t(3.4f, 0, 0, 1.0f, 10.0f, 200, 100, 4);
@@ -73,7 +75,7 @@ void uav_booster_t::trigger_position_control()
     }
     else if (error < -PI)
     {
-        // booster_ctx.data_ctx.target_trig_rad += 2.0f * PI;
+        booster_ctx.data_ctx.target_trigger_angle += 2.0f * PI;
     }
 
     booster_ctx.data_ctx.target_trigger_speed = booster_ctx.cfg.pid_cfg.trigger_pos_pid->calculate
