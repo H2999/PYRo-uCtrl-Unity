@@ -1,27 +1,23 @@
-#include "pyro_uav_shoot.h"
+#include "Uav_booster/Uav_booster.h"
 
 namespace pyro
 {
-void uav_shoot_t::fsm_active_state::on_enter(uav_shoot_t *owner)
+void uav_booster_t::active_state_t::enter(uav_booster_t *owner)
 {
-    owner->shoot_ctx.motor->fric_motor[0]->enable();
-    owner->shoot_ctx.motor->fric_motor[1]->enable();
-    owner->shoot_ctx.motor->trigger_motor->enable();
+    owner->booster_ctx.cfg.motor_cfg.fric_wheel[0]->enable();
+    owner->booster_ctx.cfg.motor_cfg.fric_wheel[1]->enable();
 }
 
-void uav_shoot_t::fsm_active_state::on_execute(uav_shoot_t *ctx)
+void uav_booster_t::active_state_t::execute(uav_booster_t *owner)
 {
-    if (ctx->shoot_ctx.cmd->is_ready)
-    {
-        this->change_state(&ready_state);
-    }
-    else if (ctx->shoot_ctx.cmd->is_fire)
-    {
-        this->change_state(&fire_state);
-    }
+    owner->booster_ctx.data_ctx.target_fric_speed[0] += owner->booster_ctx.cmd->fric1_delta_speed;
+    owner->booster_ctx.data_ctx.target_fric_speed[1] += owner->booster_ctx.cmd->fric2_delta_speed;
+
+    owner->fric_control();
+    owner->send_fric_command();
 }
 
-void uav_shoot_t::fsm_active_state::on_exit(uav_shoot_t *owner)
+void uav_booster_t::active_state_t::exit(uav_booster_t *owner)
 {
 }
 

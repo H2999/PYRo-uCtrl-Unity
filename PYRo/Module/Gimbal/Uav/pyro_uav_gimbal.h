@@ -35,6 +35,8 @@ class uav_gimbal_t final : public module_base_t<uav_gimbal_t,uav_gimbal_cmd_t,ua
     struct data_ctx_t;
     struct gimbal_ctx_t;
 
+    struct uav_booster_ctx_t;
+
 public:
     uav_gimbal_t(const uav_gimbal_t &)            = delete;
     uav_gimbal_t &operator=(const uav_gimbal_t &) = delete;
@@ -102,8 +104,7 @@ private:
         struct correct_imu_ctx_t
         {
             float yaw_offset{};
-            float pitch_offset{};
-            float roll_offset{};
+            uint8_t correct_flag{};
 
             float correct_yaw_angle{};
             float correct_pitch_angle{};
@@ -124,6 +125,20 @@ private:
     gimbal_ctx_t gimbal_ctx;
     ins_drv_t *gimbal_ins;
 
+    // struct uav_booster_ctx_t
+    // {
+    //     motor_base_t *fric_motor[2]{nullptr};
+    //
+    //     pid_t *fric_pid[2]{nullptr};
+    //
+    //     float target_fric_speed[2]{};
+    //     float current_fric_speed[2]{};
+    //
+    //     float output_fric_turque[2]{};
+    // };
+    //
+    // uav_booster_ctx_t uav_booster_ctx;
+
     struct state_passive_t final : public state_t<uav_gimbal_t>
     {
         void enter(uav_gimbal_t *owner) override;
@@ -143,16 +158,16 @@ private:
     state_active_t state_active;
     fsm_t<uav_gimbal_t> main_fsm;
 
-    static constexpr float yaw_max_value = 2.3f;
-    static constexpr float yaw_min_value = -0.95f;
+    static constexpr float yaw_max_value = 0.03f;
+    static constexpr float yaw_min_value = -2.55f;
 
     //总是要比从电机读取的机械限位要大一点 也就是遥控器接收到的值大一点 才能符合真的限位
     //只有pitch轴和roll轴这样
     static constexpr float pitch_max_value = 0.3f;
     static constexpr float pitch_min_value = -0.5f;
 
-    static constexpr float roll_max_value = 0.4f;
-    static constexpr float roll_min_value = -0.6f;
+    static constexpr float roll_max_value = 0.7f;
+    static constexpr float roll_min_value = -0.2f;
 };
 }
 

@@ -103,42 +103,17 @@ private:
         void enter(uav_booster_t *owner) override;
         void execute(uav_booster_t *owner) override;
         void exit(uav_booster_t *owner) override;
-
-    private:
-        bool trigger_stopped{false}; // 用于确保拨弹盘完全停止后发0
     };
 
-    struct fsm_active_t final : public fsm_t<uav_booster_t>
+    struct active_state_t final : public state_t<uav_booster_t>
     {
-        struct ready_state_t final : public state_t<uav_booster_t>
-        {
-            void enter(uav_booster_t *owner) override;
-            void execute(uav_booster_t *owner) override;
-            void exit(uav_booster_t *owner) override;
-        };
-        struct firing_state_t final : public state_t<uav_booster_t>
-        {
-            void enter(uav_booster_t *owner) override;
-            void execute(uav_booster_t *owner) override;
-            void exit(uav_booster_t *owner) override;
-        };
-        struct stall_state_t final : public state_t<uav_booster_t>
-        {
-            void enter(uav_booster_t *owner) override;
-            void execute(uav_booster_t *owner) override;
-            void exit(uav_booster_t *owner) override;
-        };
-        void on_enter(uav_booster_t *owner) override;
-        void on_execute(uav_booster_t *owner) override;
-        void on_exit(uav_booster_t *owner) override;
-
-    private:
-        ready_state_t ready_state;
-        firing_state_t busy_state;
-        stall_state_t stall_state;
+        void enter(uav_booster_t *owner) override;
+        void execute(uav_booster_t *owner) override;
+        void exit(uav_booster_t *owner) override;
     };
+
     passive_state_t passive_state;
-    fsm_active_t active_state;
+    active_state_t active_state;
     fsm_t<uav_booster_t> main_fsm;
 };
 

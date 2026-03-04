@@ -71,7 +71,6 @@ add_executable(${CMAKE_PROJECT_NAME}
         PYRo/Core/Task/pyro_task.cpp
         PYRo/Core/Memory/pyro_core_dma_heap.c
         PYRo/Core/Memory/pyro_core_mem.cpp
-        PYRo/Core/Task/pyro_task.cpp
 
         # --- Peripheral ---
         PYRo/Peripheral/CAN/pyro_can_drv.cpp
@@ -118,8 +117,6 @@ add_executable(${CMAKE_PROJECT_NAME}
         PYRo/Application/Mission/pyro_init_thread.cpp
         PYRo/Application/Mission/pyro_mission_planer.cpp
 
-        PYRo/Module/Booster/Uav_booster/Uav_booster.cpp
-
         # --- Debug ---
         PYRo/Debug/Debug_task.cpp
         PYRo/Debug/JCOM/pyro_jcom.cpp
@@ -134,20 +131,8 @@ add_executable(${CMAKE_PROJECT_NAME}
         # --- Device ---
         PYRo/Device/BMI088/BMI088_driver.cpp
         PYRo/Device/BMI088/BMI088_middleware.cpp
-        PYRo/Module/Gimbal/Uav/pyro_uav_gimbal.cpp
-        PYRo/Module/Gimbal/Uav/fsm/pyro_passive_state.cpp
-        PYRo/Module/Gimbal/Uav/fsm/pyro_active_state.cpp
-        PYRo/Application/Mission/Uav/pyro_uav_thread.cpp
-        PYRo/Module/Booster/Uav_booster/fsm/pyro_shoot_stall_state.cpp
-        PYRo/Module/Booster/Uav_booster/fsm/pyro_shoot_passive_state.cpp
-        PYRo/Module/Booster/Uav_booster/Uav_booster.cpp
-        #        PYRo/Module/Chassis/Rudder/fsm/pyro_rud_moving_state.cpp
-#        PYRo/Module/Chassis/Rudder/fsm/pyro_rud_braking_state.cpp
-#        PYRo/Module/Chassis/Rudder/fsm/pyro_rud_turning_state.cpp
-
-
-
 )
+
 if (ROBOT_ID EQUAL HERO_ID)
     include(${CMAKE_CURRENT_SOURCE_DIR}/PYRo/cmake/target/hero_target.cmake)
 elseif (ROBOT_ID EQUAL SUB_HERO_ID)
@@ -156,6 +141,8 @@ elseif(ROBOT_ID EQUAL INFANTRY2_ID)
     include(${CMAKE_CURRENT_SOURCE_DIR}/PYRo/cmake/target/infantry2_target.cmake)
 elseif(ROBOT_ID EQUAL SENTRY_ID)
     include(${CMAKE_CURRENT_SOURCE_DIR}/PYRo/cmake/target/sentry_target.cmake)
+elseif(ROBOT_ID EQUAL UAV_ID)
+    include(${CMAKE_CURRENT_SOURCE_DIR}/PYRo/cmake/target/uav_target.cmake)
 endif ()
 
 add_subdirectory(cmake/stm32cubemx)
@@ -191,7 +178,6 @@ target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC
 
         # --- Component ---
         PYRo/Component/CRC
-        PYRo/Component/Shoot
         PYRo/Component/IMU
         PYRo/Component/INS
         PYRo/Component/Motor

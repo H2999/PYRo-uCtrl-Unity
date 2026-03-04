@@ -1,5 +1,4 @@
 #include "Uav_booster.h"
-
 #include "pyro_dji_motor_drv.h"
 
 namespace pyro
@@ -11,15 +10,15 @@ uav_booster_t::uav_booster_t() : module_base_t("quad_booster")
 
 status_t uav_booster_t::_init()
 {
-    booster_ctx.cfg.motor_cfg.fric_wheel[0] = new dji_m2006_motor_drv_t(dji_motor_tx_frame_t::id_1,can_hub_t::can2);
-    booster_ctx.cfg.motor_cfg.fric_wheel[1] = new dji_m2006_motor_drv_t(dji_motor_tx_frame_t::id_2,can_hub_t::can2);
+    booster_ctx.cfg.motor_cfg.fric_wheel[0] = new dji_m3508_motor_drv_t(dji_motor_tx_frame_t::id_1,can_hub_t::can1);
+    booster_ctx.cfg.motor_cfg.fric_wheel[1] = new dji_m3508_motor_drv_t(dji_motor_tx_frame_t::id_2,can_hub_t::can1);
 
-    booster_ctx.cfg.motor_cfg.trigger_wheel = new dji_m3508_motor_drv_t(dji_motor_tx_frame_t::id_3,can_hub_t::can2);
+    // booster_ctx.cfg.motor_cfg.trigger_wheel = new dji_m3508_motor_drv_t(dji_motor_tx_frame_t::id_3,can_hub_t::can2);
 
-    booster_ctx.cfg.pid_cfg.fric_pid[0] = new pid_t(6.40f, 0.02f, 0.02f,
-        2.5f, 20, 320, 80, 4);
-    booster_ctx.cfg.pid_cfg.fric_pid[1] = new pid_t(6.9f, 0.02f, 0.02f,
-        2.5f, 20, 320, 80, 4);
+    booster_ctx.cfg.pid_cfg.fric_pid[0] = new pid_t(6.40f, 0.02f, 0.02f,2.5f,
+        10, 320, 80, 4);
+    booster_ctx.cfg.pid_cfg.fric_pid[1] = new pid_t(6.9f, 0.02f, 0.02f,2.5f,
+        10, 320, 80, 4);
 
     booster_ctx.cfg.pid_cfg.trigger_pos_pid =
         new pid_t(3.4f, 0, 0, 1.0f, 10.0f, 200, 100, 4);
