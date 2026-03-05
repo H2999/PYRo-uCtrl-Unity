@@ -36,6 +36,8 @@ struct uav_booster_cfg_t
         pid_t *fric_pid[2]{nullptr};
         pid_t *trigger_pos_pid{nullptr};
         pid_t *trigger_spd_pid{nullptr};
+
+        pid_t *shoot_closed_pid{nullptr};
     };
 
     motor_cfg_t motor_cfg;
@@ -105,15 +107,47 @@ private:
         void exit(uav_booster_t *owner) override;
     };
 
-    struct active_state_t final : public state_t<uav_booster_t>
+    struct fsm_active_t final : public fsm_t<uav_booster_t>
     {
-        void enter(uav_booster_t *owner) override;
-        void execute(uav_booster_t *owner) override;
-        void exit(uav_booster_t *owner) override;
+        struct ready_state_fric_t final : public state_t<uav_booster_t>
+        {
+            void enter(uav_booster_t *owner) override;
+            void execute(uav_booster_t *owner) override;
+            void exit(uav_booster_t *owner) override;
+        };
+
+        struct ready_state_t final : public state_t<uav_booster_t>
+        {
+            void enter(uav_booster_t *owner) override;
+            void execute(uav_booster_t *owner) override;
+            void exit(uav_booster_t *owner) override;
+        };
+
+        struct shoot_bullet_t final : public state_t<uav_booster_t>
+        {
+            void enter(uav_booster_t *owner) override;
+            void execute(uav_booster_t *owner) override;
+            void exit(uav_booster_t *owner) override;
+        };
+
+        struct shoot_continus_bullet_t final : public state_t<uav_booster_t>
+        {
+            void enter(uav_booster_t *owner) override;
+            void execute(uav_booster_t *owner) override;
+            void exit(uav_booster_t *owner) override;
+        };
+
+        struct bullet_stall_t final : public state_t<uav_booster_t>
+        {
+            void enter(uav_booster_t *owner) override;
+            void execute(uav_booster_t *owner) override;
+            void exit(uav_booster_t *owner) override;
+        };
+
     };
 
     passive_state_t passive_state;
-    active_state_t active_state;
+    fsm_active_t active_state;
     fsm_t<uav_booster_t> main_fsm;
 };
 

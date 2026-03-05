@@ -77,7 +77,7 @@ void quad_booster_t::_fsm_execute()
     else
         _main_fsm.change_state(&_state_passive);
 
-    _main_fsm.execute(this);
+    _main_fsm.on_execute(this);
 }
 
 void quad_booster_t::_fric_control()

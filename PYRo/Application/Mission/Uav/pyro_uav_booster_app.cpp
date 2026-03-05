@@ -18,13 +18,13 @@ extern "C"
         if (pyro::dr16_drv_t::sw_state_t::SW_UP == p_ctrl->rc.s_r.state)
         {
             quad_booster_cmd_ptr->mode = pyro::cmd_base_t::mode_t::PASSIVE;
-            quad_booster_cmd_ptr->fric1_speed   = 0.0f;
-            quad_booster_cmd_ptr->fric2_speed  = 0.0f;
+            // quad_booster_cmd_ptr->fric1_speed   = 0.0f;
+            // quad_booster_cmd_ptr->fric2_speed  = 0.0f;
             return;
         }
         quad_booster_cmd_ptr->mode      = pyro::cmd_base_t::mode_t::ACTIVE;
-        quad_booster_cmd_ptr->fric1_speed = 14.0f; // 可调节
-        quad_booster_cmd_ptr->fric2_mps = 14.0f;
+        // quad_booster_cmd_ptr->fric1_speed = 14.0f; // 可调节
+        // quad_booster_cmd_ptr->fric2_mps = 14.0f;
         // 摩擦轮控制
         static float sl_using_time      = 0;
         if (pyro::dr16_drv_t::sw_ctrl_t::SW_UP_TO_MID == p_ctrl->rc.s_l.ctrl &&
@@ -38,11 +38,11 @@ extern "C"
             p_ctrl->rc.s_l.change_time != sl_using_time)
         {
             sl_using_time                     = p_ctrl->rc.s_l.change_time;
-            quad_booster_cmd_ptr->fire_enable = true;
+            // quad_booster_cmd_ptr->fire_enable = true;
         }
         else
         {
-            quad_booster_cmd_ptr->fire_enable = false;
+            // quad_booster_cmd_ptr->fire_enable = false;
         }
         // 开火控制 (单发）
     }
@@ -60,8 +60,8 @@ extern "C"
 
     void hero_booster_init(void *argument)
     {
-        uav_booster_ptr     = pyro::quad_booster_t::instance();
-        quad_booster_cmd_ptr = new pyro::quad_booster_cmd_t();
+        // uav_booster_ptr     = pyro::quad_booster_t::instance();
+        // quad_booster_cmd_ptr = new pyro::quad_booster_cmd_t();
         rc_ctrl_ptr = static_cast<pyro::dr16_drv_t::dr16_ctrl_t const *>(
             pyro::rc_hub_t::get_instance(pyro::rc_hub_t::DR16)->read());
         uav_booster_ptr->start();

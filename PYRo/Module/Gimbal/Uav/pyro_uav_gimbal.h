@@ -125,20 +125,6 @@ private:
     gimbal_ctx_t gimbal_ctx;
     ins_drv_t *gimbal_ins;
 
-    // struct uav_booster_ctx_t
-    // {
-    //     motor_base_t *fric_motor[2]{nullptr};
-    //
-    //     pid_t *fric_pid[2]{nullptr};
-    //
-    //     float target_fric_speed[2]{};
-    //     float current_fric_speed[2]{};
-    //
-    //     float output_fric_turque[2]{};
-    // };
-    //
-    // uav_booster_ctx_t uav_booster_ctx;
-
     struct state_passive_t final : public state_t<uav_gimbal_t>
     {
         void enter(uav_gimbal_t *owner) override;
