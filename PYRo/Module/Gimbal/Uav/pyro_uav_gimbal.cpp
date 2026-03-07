@@ -16,7 +16,7 @@ uav_gimbal_t::uav_gimbal_t()
 status_t uav_gimbal_t::_init()
 {
     gimbal_ctx.motor.yaw_motor = new dji_gm_6020_motor_drv_t(dji_motor_tx_frame_t::id_5,can_hub_t::can1);
-    gimbal_ctx.motor.pitch_motor = new dm_motor_drv_t(0x30,0x40,can_hub_t::can1);
+    gimbal_ctx.motor.pitch_motor = new dm_motor_drv_t(0x11,0x10,can_hub_t::can1);
     gimbal_ctx.motor.roll_motor = new dm_motor_drv_t(0x01,0x00,can_hub_t::can1);
 
     static_cast<dm_motor_drv_t *>(gimbal_ctx.motor.roll_motor)->set_position_range(-PI, PI);
@@ -24,22 +24,22 @@ status_t uav_gimbal_t::_init()
     static_cast<dm_motor_drv_t *>(gimbal_ctx.motor.roll_motor)->set_torque_range(-10, 10);
 
     static_cast<dm_motor_drv_t *>(gimbal_ctx.motor.pitch_motor)->set_position_range(-PI, PI);
-    static_cast<dm_motor_drv_t *>(gimbal_ctx.motor.pitch_motor)->set_rotate_range(-20, 20);
-    static_cast<dm_motor_drv_t *>(gimbal_ctx.motor.pitch_motor)->set_torque_range(-10, 10);
+    static_cast<dm_motor_drv_t *>(gimbal_ctx.motor.pitch_motor)->set_rotate_range(-15.333333, 15.333333);
+    static_cast<dm_motor_drv_t *>(gimbal_ctx.motor.pitch_motor)->set_torque_range(-3, 3);
 
-    gimbal_ctx.pid.yaw_position_pid = new pid_t(12.4f,0.0012f,0,1.0f,
-                3.0f,200,100,4);
-    gimbal_ctx.pid.pitch_position_pid = new pid_t(4.525f,0.0f,0.0f,1.0f,
+    gimbal_ctx.pid.yaw_position_pid = new pid_t(12.4f,0.0012f,0,2.0f,
+                4.5f,200,100,4);
+    gimbal_ctx.pid.pitch_position_pid = new pid_t(5.125f,0.0008f,0.0f,1.0f,
                 3.0f,200,90,4);
-    gimbal_ctx.pid.roll_position_pid = new pid_t(5.1f,0.0f,0.0f,2.0f,
+    gimbal_ctx.pid.roll_position_pid = new pid_t(5.8f,0.0f,0.0f,2.0f,
                 3.0f,200,120,4);
 
-    gimbal_ctx.pid.yaw_speed_pid = new pid_t(1.05f,0.011f,0.0008f,0.8f,
+    gimbal_ctx.pid.yaw_speed_pid = new pid_t(0.95f,0.009f,0.0008f,1.8f,
                 3.0f,230,120,4);
-    gimbal_ctx.pid.pitch_speed_pid = new pid_t(0.425f,0.0008f,0.0005f,1.5f,
-                0.8f,300,100,4);
-    gimbal_ctx.pid.roll_speed_pid = new pid_t(0.5f,0.008f,0.0008f,1.8f,
-                3.0f,200,120,4);
+    gimbal_ctx.pid.pitch_speed_pid = new pid_t(1.05f,0.018f,0.0012f,2.5f,
+                8.0f,230,100,4);
+    gimbal_ctx.pid.roll_speed_pid = new pid_t(1.28f,0.008f,0.0004f,1.8f,
+                10.0f,200,120,4);
 
     return PYRO_OK;
 }
@@ -83,12 +83,12 @@ void uav_gimbal_t::gimbal_control(gimbal_ctx_t *ctx)
     if (ctx->data.correct_imu_ctx.correct_flag)
     {
         ctx->data.correct_imu_ctx.correct_yaw_angle = - ctx->data._current_yaw_angle + ctx->data.correct_imu_ctx.yaw_offset;
-        // ctx->data.correct_imu_ctx.correct_pitch_angle = - ctx->data._current_pitch_angle;
+        ctx->data.correct_imu_ctx.correct_pitch_angle = - ctx->data._current_pitch_angle;
         ctx->data.correct_imu_ctx.correct_roll_angle = ctx->data._current_roll_angle;
 
         ctx->data._target_yaw_angle = ctx->data.correct_imu_ctx.correct_yaw_angle;
-        // ctx->data._target_pitch_angle = ctx->data.correct_imu_ctx.correct_pitch_angle;
-        ctx->data._target_roll_angle = ctx->data.correct_imu_ctx.correct_roll_angle;
+        ctx->data._target_pitch_angle = ctx->data.correct_imu_ctx.correct_pitch_angle;
+        ctx->data.final_roll_angle = ctx->data.correct_imu_ctx.correct_roll_angle;
         ctx->data.correct_imu_ctx.correct_flag = 0;
     }
     //注意这里 IMU和电机的角度减少的方向是不同的 云台中IMU逆时针是角度减少
@@ -120,7 +120,7 @@ void uav_gimbal_t::gimbal_control(gimbal_ctx_t *ctx)
             ctx->data._target_pitch_angle, ctx->data.correct_imu_ctx.correct_pitch_angle);
 
     ctx->data._target_roll_speed = ctx->pid.roll_position_pid->calculate(
-            ctx->data._target_roll_angle,ctx->data.correct_imu_ctx.correct_roll_angle);
+            ctx->data.final_roll_angle,ctx->data.correct_imu_ctx.correct_roll_angle);
 
     //读取出来的速度和电机读取出来的也是反向的 所以也要加个负号 这样最后算出来的输出扭矩才是正确的
     ctx->data._output_yaw_torque = ctx->pid.yaw_speed_pid->calculate(
@@ -135,11 +135,22 @@ void uav_gimbal_t::gimbal_control(gimbal_ctx_t *ctx)
 
 void uav_gimbal_t::send_motor_command(const gimbal_ctx_t *ctx)
 {
-     // ctx->motor.yaw_motor->send_torque(ctx->data._output_yaw_torque);
+     ctx->motor.yaw_motor->send_torque(ctx->data._output_yaw_torque);
 
-     // ctx->motor.pitch_motor->send_torque(ctx->data._output_pitch_torque);
+     ctx->motor.pitch_motor->send_torque(ctx->data._output_pitch_torque);
 
-     // ctx->motor.roll_motor->send_torque(ctx->data._output_roll_torque);
+     ctx->motor.roll_motor->send_torque(ctx->data._output_roll_torque);
+}
+
+void uav_gimbal_t::normalize_angle(float& angle) {
+    if (angle > PI)
+    {
+        angle -= 2.0f * PI;
+    }
+    else if (angle < -PI)
+    {
+        angle += 2.0f * PI;
+    }
 }
 
 }

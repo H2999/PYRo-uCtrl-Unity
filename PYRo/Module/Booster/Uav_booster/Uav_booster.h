@@ -144,6 +144,10 @@ private:
             void exit(uav_booster_t *owner) override;
         };
 
+        void on_enter(uav_booster_t *owner) override;
+        void on_execute(uav_booster_t *owner) override;
+        void on_exit(uav_booster_t *owner) override;
+
     };
 
     passive_state_t passive_state;
