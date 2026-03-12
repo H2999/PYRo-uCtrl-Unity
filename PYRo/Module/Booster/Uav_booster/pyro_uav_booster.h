@@ -68,8 +68,7 @@ private:
 
     //派生方法
     void fric_control();
-    void trigger_position_control();
-    void trigger_speed_control();
+    void trigger_control();
     void send_fric_command();
     void send_trigger_command();
 
@@ -109,35 +108,49 @@ private:
 
     struct fsm_active_t final : public fsm_t<uav_booster_t>
     {
-        struct ready_state_fric_t final : public state_t<uav_booster_t>
+        struct state_backoff_t final : public state_t<uav_booster_t>
         {
             void enter(uav_booster_t *owner) override;
             void execute(uav_booster_t *owner) override;
             void exit(uav_booster_t *owner) override;
         };
 
-        struct ready_state_t final : public state_t<uav_booster_t>
+        struct state_interim_t final : public state_t<uav_booster_t>
         {
             void enter(uav_booster_t *owner) override;
             void execute(uav_booster_t *owner) override;
             void exit(uav_booster_t *owner) override;
         };
 
-        struct shoot_bullet_t final : public state_t<uav_booster_t>
+        struct state_fric_ready_t final : public state_t<uav_booster_t>
         {
             void enter(uav_booster_t *owner) override;
             void execute(uav_booster_t *owner) override;
             void exit(uav_booster_t *owner) override;
         };
 
-        struct shoot_continus_bullet_t final : public state_t<uav_booster_t>
+        struct state_ready_t final : public state_t<uav_booster_t>
         {
             void enter(uav_booster_t *owner) override;
             void execute(uav_booster_t *owner) override;
             void exit(uav_booster_t *owner) override;
         };
 
-        struct bullet_stall_t final : public state_t<uav_booster_t>
+        struct shoot_single_t final : public state_t<uav_booster_t>
+        {
+            void enter(uav_booster_t *owner) override;
+            void execute(uav_booster_t *owner) override;
+            void exit(uav_booster_t *owner) override;
+        };
+
+        struct shoot_continue_bullet_t final : public state_t<uav_booster_t>
+        {
+            void enter(uav_booster_t *owner) override;
+            void execute(uav_booster_t *owner) override;
+            void exit(uav_booster_t *owner) override;
+        };
+
+        struct shoot_stall_t final : public state_t<uav_booster_t>
         {
             void enter(uav_booster_t *owner) override;
             void execute(uav_booster_t *owner) override;
@@ -147,6 +160,15 @@ private:
         void on_enter(uav_booster_t *owner) override;
         void on_execute(uav_booster_t *owner) override;
         void on_exit(uav_booster_t *owner) override;
+
+    private:
+        state_backoff_t backoff_state;
+        state_interim_t interim_state;
+        state_fric_ready_t ready_fric_state;
+        state_ready_t ready_state;
+        shoot_single_t single_state;
+        shoot_continue_bullet_t continue_bullet_state;
+        shoot_stall_t stall_state;
 
     };
 

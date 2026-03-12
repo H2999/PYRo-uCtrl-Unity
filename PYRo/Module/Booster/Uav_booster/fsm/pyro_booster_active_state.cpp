@@ -4,8 +4,7 @@ namespace pyro
 {
 void uav_booster_t::fsm_active_t::on_enter(uav_booster_t *owner)
 {
-    owner->booster_ctx.cfg.motor_cfg.fric_wheel[0]->enable();
-    owner->booster_ctx.cfg.motor_cfg.fric_wheel[1]->enable();
+    change_state(&ready_state_fric_t);
 }
 
 void uav_booster_t::fsm_active_t::on_execute(uav_booster_t *owner)

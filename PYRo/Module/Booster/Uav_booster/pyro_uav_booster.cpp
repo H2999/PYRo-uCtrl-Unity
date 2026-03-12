@@ -10,8 +10,8 @@ uav_booster_t::uav_booster_t() : module_base_t("quad_booster")
 
 status_t uav_booster_t::_init()
 {
-    booster_ctx.cfg.motor_cfg.fric_wheel[0] = new dji_m3508_motor_drv_t(dji_motor_tx_frame_t::id_1,can_hub_t::can1);
-    booster_ctx.cfg.motor_cfg.fric_wheel[1] = new dji_m3508_motor_drv_t(dji_motor_tx_frame_t::id_2,can_hub_t::can1);
+    booster_ctx.cfg.motor_cfg.fric_wheel[0] = new dji_m3508_motor_drv_t(dji_motor_tx_frame_t::id_2,can_hub_t::can1);
+    booster_ctx.cfg.motor_cfg.fric_wheel[1] = new dji_m3508_motor_drv_t(dji_motor_tx_frame_t::id_1,can_hub_t::can1);
 
     booster_ctx.cfg.motor_cfg.trigger_wheel = new dji_m3508_motor_drv_t(dji_motor_tx_frame_t::id_3,can_hub_t::can2);
 
@@ -42,6 +42,7 @@ void uav_booster_t::_update_feedback()
     booster_ctx.data_ctx.current_trigger_angle = booster_ctx.cfg.motor_cfg.trigger_wheel->get_current_position();
     booster_ctx.data_ctx.current_trigger_speed = booster_ctx.cfg.motor_cfg.trigger_wheel->get_current_rotate();
 
+    //用来判断是否堵转
     booster_ctx.data_ctx.current_trigger_torque = booster_ctx.cfg.motor_cfg.trigger_wheel->get_current_torque();
 }
 
@@ -66,7 +67,7 @@ void uav_booster_t::fric_control()
         (booster_ctx.data_ctx.target_fric_speed[1],booster_ctx.data_ctx.current_fric_speed[1]);
 }
 
-void uav_booster_t::trigger_position_control()
+void uav_booster_t::trigger_control()
 {
     const float error = booster_ctx.data_ctx.target_trigger_angle - booster_ctx.data_ctx.current_trigger_angle;
     if (error > PI)
@@ -80,15 +81,11 @@ void uav_booster_t::trigger_position_control()
 
     booster_ctx.data_ctx.target_trigger_speed = booster_ctx.cfg.pid_cfg.trigger_pos_pid->calculate
         (booster_ctx.data_ctx.target_trigger_angle, booster_ctx.data_ctx.current_trigger_angle);
-}
 
-void uav_booster_t::trigger_speed_control()
-{
-    // 修正：计算结果应该存入输出扭矩变量，而不是覆盖当前的反馈速度
     booster_ctx.data_ctx.trigger_output_torque = booster_ctx.cfg.pid_cfg.trigger_spd_pid->calculate(
-        booster_ctx.data_ctx.target_trigger_speed,
-        booster_ctx.data_ctx.current_trigger_speed
-    );
+       booster_ctx.data_ctx.target_trigger_speed,
+       booster_ctx.data_ctx.current_trigger_speed
+   );
 }
 
 void uav_booster_t::send_fric_command()
