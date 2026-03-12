@@ -1,14 +1,14 @@
 #include "pyro_module_base.h"
 #include "pyro_rc_hub.h"
 #include "Gimbal/Uav/pyro_uav_gimbal.h"
-#include "Uav_booster/Uav_booster.h"
+#include "pyro_uav_booster.h"
 
 using namespace pyro;
 uav_gimbal_t *gimbal_ptr                       = nullptr;
 uav_gimbal_cmd_t *gimbal_cmd_ptr               = nullptr;
 dr16_drv_t::dr16_ctrl_t const *rc_ctrl_ptr = nullptr;
 
-static constexpr float rc_sensitivity = 0.000015f;
+static constexpr float rc_sensitivity = 0.0025f;
 
 extern "C"
 {

@@ -1,30 +1,43 @@
-#include "Uav_booster.h"
+#include "pyro_uav_booster.h"
 #include "pyro_dji_motor_drv.h"
+#include "Booster/Quad_pink/pyro_quad_booster.h"
 
 namespace pyro
 {
 uav_booster_t::uav_booster_t() : module_base_t("quad_booster")
 {
     booster_ctx = {};
+    main_fsm.change_state(&passive_state);
 }
 
 status_t uav_booster_t::_init()
 {
-    booster_ctx.cfg.motor_cfg.fric_wheel[0] = new dji_m3508_motor_drv_t(dji_motor_tx_frame_t::id_2,can_hub_t::can1);
-    booster_ctx.cfg.motor_cfg.fric_wheel[1] = new dji_m3508_motor_drv_t(dji_motor_tx_frame_t::id_1,can_hub_t::can1);
-
+    //摩擦轮电机初始化
+    booster_ctx.cfg.motor_cfg.fric_wheel[0] = new dji_m3508_motor_drv_t(dji_motor_tx_frame_t::id_2,can_hub_t::can2);
+    booster_ctx.cfg.motor_cfg.fric_wheel[1] = new dji_m3508_motor_drv_t(dji_motor_tx_frame_t::id_1,can_hub_t::can2);
+    //拨弹盘电机初始化
     booster_ctx.cfg.motor_cfg.trigger_wheel = new dji_m3508_motor_drv_t(dji_motor_tx_frame_t::id_3,can_hub_t::can2);
 
+    //摩擦轮pid初始化
     booster_ctx.cfg.pid_cfg.fric_pid[0] = new pid_t(6.40f, 0.02f, 0.02f,2.5f,
-        10, 320, 80, 4);
+        20, 320, 80, 4);
     booster_ctx.cfg.pid_cfg.fric_pid[1] = new pid_t(6.9f, 0.02f, 0.02f,2.5f,
-        10, 320, 80, 4);
-
-    booster_ctx.cfg.pid_cfg.trigger_pos_pid =
+        20, 320, 80, 4);
+    //拨弹盘pid初始化
+    booster_ctx.cfg.pid_cfg.trigger_position_pid =
         new pid_t(3.4f, 0, 0, 1.0f, 10.0f, 200, 100, 4);
-    booster_ctx.cfg.pid_cfg.trigger_spd_pid =
+    booster_ctx.cfg.pid_cfg.trigger_speed_pid =
         new pid_t(1.8f, 0, 0.005f, 0, 20.0f, 200, 100, 4);
     return PYRO_OK;
+}
+
+float uav_booster_t::normalize_angle(float angle)
+{
+    while (angle > PI)
+        angle -= 2.0f * PI;
+    while (angle < -PI)
+        angle += 2.0f * PI;
+    return angle;
 }
 
 void uav_booster_t::_update_feedback()
@@ -35,15 +48,41 @@ void uav_booster_t::_update_feedback()
     booster_ctx.cfg.motor_cfg.trigger_wheel->update_feedback();
 
     //获取摩擦轮转速
-    booster_ctx.data_ctx.current_fric_speed[0] = booster_ctx.cfg.motor_cfg.fric_wheel[0]->get_current_rotate();
-    booster_ctx.data_ctx.current_fric_speed[1] = booster_ctx.cfg.motor_cfg.fric_wheel[1]->get_current_rotate();
+    booster_ctx.data_ctx.current_fric_mps[0] = booster_ctx.cfg.motor_cfg.fric_wheel[0]->get_current_rotate() * FRIC1_RADIUS;
+    booster_ctx.data_ctx.current_fric_mps[1] = booster_ctx.cfg.motor_cfg.fric_wheel[1]->get_current_rotate() * FRIC1_RADIUS;
+
+    constexpr float reciprocal_ratio =
+        dji_m2006_motor_drv_t::reciprocal_reduction_ratio;
 
     //获取拨弹盘转速 位置和扭矩
-    booster_ctx.data_ctx.current_trigger_angle = booster_ctx.cfg.motor_cfg.trigger_wheel->get_current_position();
-    booster_ctx.data_ctx.current_trigger_speed = booster_ctx.cfg.motor_cfg.trigger_wheel->get_current_rotate();
 
-    //用来判断是否堵转
-    booster_ctx.data_ctx.current_trigger_torque = booster_ctx.cfg.motor_cfg.trigger_wheel->get_current_torque();
+    booster_ctx.data_ctx.current_trigger_radps =
+            booster_ctx.cfg.motor_cfg.trigger_wheel->get_current_rotate() * reciprocal_ratio;
+
+    booster_ctx.data_ctx.current_trigger_rad = booster_ctx.cfg.motor_cfg.trigger_wheel->get_current_position();
+
+    booster_ctx.data_ctx.current_trigger_torque =
+       booster_ctx.cfg.motor_cfg.trigger_wheel->get_current_torque();
+
+    const float now_rotor_rad = booster_ctx.cfg.motor_cfg.trigger_wheel->get_current_position();
+
+    float delta_rotor   = now_rotor_rad - booster_ctx.data_ctx.last_rotor_rad;
+
+    if (delta_rotor > PI)
+    {
+        delta_rotor -= 2.0f * PI;
+    }
+    else if (delta_rotor < -PI)
+    {
+        delta_rotor += 2.0f * PI;
+    }
+
+    // 累积到输出轴总角度
+    booster_ctx.data_ctx.total_trigger_rad += delta_rotor * reciprocal_ratio;
+
+    booster_ctx.data_ctx.last_rotor_rad   = now_rotor_rad;
+
+    booster_ctx.data_ctx.current_trigger_rad = normalize_angle(booster_ctx.data_ctx.total_trigger_rad);
 }
 
 void uav_booster_t::_fsm_execute()
@@ -61,42 +100,44 @@ void uav_booster_t::_fsm_execute()
 void uav_booster_t::fric_control()
 {
     booster_ctx.data_ctx.fric_output_torque[0] = booster_ctx.cfg.pid_cfg.fric_pid[0]->calculate
-        (booster_ctx.data_ctx.target_fric_speed[0], booster_ctx.data_ctx.current_fric_speed[0]);
+        (booster_ctx.data_ctx.target_fric_mps[0], booster_ctx.data_ctx.current_fric_mps[0]);
 
     booster_ctx.data_ctx.fric_output_torque[1] = booster_ctx.cfg.pid_cfg.fric_pid[1]->calculate
-        (booster_ctx.data_ctx.target_fric_speed[1],booster_ctx.data_ctx.current_fric_speed[1]);
+        (booster_ctx.data_ctx.target_fric_mps[1],booster_ctx.data_ctx.current_fric_mps[1]);
 }
 
-void uav_booster_t::trigger_control()
+void uav_booster_t::trigger_position_control()
 {
-    const float error = booster_ctx.data_ctx.target_trigger_angle - booster_ctx.data_ctx.current_trigger_angle;
+    //处理过零点问题
+    const float error = booster_ctx.data_ctx.target_trigger_rad - booster_ctx.data_ctx.current_trigger_rad;
     if (error > PI)
     {
-        booster_ctx.data_ctx.target_trigger_angle -= 2.0f * PI;
+        booster_ctx.data_ctx.target_trigger_rad -= 2.0f * PI;
     }
     else if (error < -PI)
     {
-        booster_ctx.data_ctx.target_trigger_angle += 2.0f * PI;
+        booster_ctx.data_ctx.target_trigger_rad += 2.0f * PI;
     }
 
-    booster_ctx.data_ctx.target_trigger_speed = booster_ctx.cfg.pid_cfg.trigger_pos_pid->calculate
-        (booster_ctx.data_ctx.target_trigger_angle, booster_ctx.data_ctx.current_trigger_angle);
+    booster_ctx.data_ctx.target_trigger_radps = booster_ctx.cfg.pid_cfg.trigger_position_pid->calculate
+        (booster_ctx.data_ctx.target_trigger_rad, booster_ctx.data_ctx.current_trigger_rad);
+}
 
-    booster_ctx.data_ctx.trigger_output_torque = booster_ctx.cfg.pid_cfg.trigger_spd_pid->calculate(
-       booster_ctx.data_ctx.target_trigger_speed,
-       booster_ctx.data_ctx.current_trigger_speed
-   );
+void uav_booster_t::trigger_speed_control()
+{
+    booster_ctx.data_ctx.trigger_output_torque = booster_ctx.cfg.pid_cfg.trigger_speed_pid->calculate(
+   booster_ctx.data_ctx.target_trigger_radps,booster_ctx.data_ctx.current_trigger_radps);
 }
 
 void uav_booster_t::send_fric_command()
 {
-    booster_ctx.cfg.motor_cfg.fric_wheel[0]->send_torque(booster_ctx.data_ctx.fric_output_torque[0]);
-    booster_ctx.cfg.motor_cfg.fric_wheel[1]->send_torque(booster_ctx.data_ctx.fric_output_torque[1]);
+//     booster_ctx.cfg.motor_cfg.fric_wheel[0]->send_torque(booster_ctx.data_ctx.fric_output_torque[0]);
+//     booster_ctx.cfg.motor_cfg.fric_wheel[1]->send_torque(booster_ctx.data_ctx.fric_output_torque[1]);
 }
 
 void uav_booster_t::send_trigger_command()
 {
-    booster_ctx.cfg.motor_cfg.trigger_wheel->send_torque(booster_ctx.data_ctx.trigger_output_torque);
+    // booster_ctx.cfg.motor_cfg.trigger_wheel->send_torque(booster_ctx.data_ctx.trigger_output_torque);
 }
 
 } // namespace pyro

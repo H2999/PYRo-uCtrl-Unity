@@ -23,7 +23,6 @@ void quad_booster_t::fsm_active_t::state_interim_t::execute(owner *owner)
         request_switch(&owner->_state_active._ready_state);
     }
 
-
     owner->_trigger_position_control();
     owner->_send_trigger_command();
 }

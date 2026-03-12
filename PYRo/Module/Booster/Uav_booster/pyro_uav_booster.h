@@ -13,11 +13,14 @@ struct uav_booster_cmd_t final : public cmd_base_t
 {
     bool fric_on;               // 摩擦轮开启
     bool trigger_enable;        // 拨弹开启
-    float target_fric1_speed;   // 第一级摩擦轮目标转速
-    float target_fric2_speed;   // 第二级摩擦轮目标转速
+    float target_fric1_mps;   // 第一级摩擦轮目标转速
+    float target_fric2_mps;   // 第二级摩擦轮目标转速
+
+    bool single_mode;
+    bool continue_mode;
 
     uav_booster_cmd_t()
-        : fric_on(false), trigger_enable(false), target_fric1_speed(0), target_fric2_speed(0)
+        : fric_on(false), trigger_enable(false), target_fric1_mps(0), target_fric2_mps(0), single_mode(false), continue_mode(false)
     {
     }
 };
@@ -34,8 +37,8 @@ struct uav_booster_cfg_t
     struct pid_cfg_t
     {
         pid_t *fric_pid[2]{nullptr};
-        pid_t *trigger_pos_pid{nullptr};
-        pid_t *trigger_spd_pid{nullptr};
+        pid_t *trigger_position_pid{nullptr};
+        pid_t *trigger_speed_pid{nullptr};
 
         pid_t *shoot_closed_pid{nullptr};
     };
@@ -68,22 +71,28 @@ private:
 
     //派生方法
     void fric_control();
-    void trigger_control();
+    void trigger_position_control();
+    void trigger_speed_control();
     void send_fric_command();
     void send_trigger_command();
+    float normalize_angle(float angle);
 
     struct data_ctx_t
     {
+        // 核心逻辑变量
+        float last_rotor_rad{0};
+        float total_trigger_rad{0};
+
         //当前
-        float current_fric_speed[2]{};
-        float current_trigger_angle{0};
-        float current_trigger_speed{};
+        float current_fric_mps[2]{};
+        float current_trigger_rad{0};
+        float current_trigger_radps{};
         float current_trigger_torque{0};
 
         //目标
-        float target_fric_speed[2]{};
-        float target_trigger_angle{0};
-        float target_trigger_speed{0};
+        float target_fric_mps[2]{};
+        float target_trigger_rad{0};
+        float target_trigger_radps{0};
 
         //输出扭矩
         float fric_output_torque[2]{};
@@ -113,6 +122,9 @@ private:
             void enter(uav_booster_t *owner) override;
             void execute(uav_booster_t *owner) override;
             void exit(uav_booster_t *owner) override;
+
+        private:
+            float backoff_turnback_start_time{0.0f};
         };
 
         struct state_interim_t final : public state_t<uav_booster_t>
@@ -122,21 +134,7 @@ private:
             void exit(uav_booster_t *owner) override;
         };
 
-        struct state_fric_ready_t final : public state_t<uav_booster_t>
-        {
-            void enter(uav_booster_t *owner) override;
-            void execute(uav_booster_t *owner) override;
-            void exit(uav_booster_t *owner) override;
-        };
-
-        struct state_ready_t final : public state_t<uav_booster_t>
-        {
-            void enter(uav_booster_t *owner) override;
-            void execute(uav_booster_t *owner) override;
-            void exit(uav_booster_t *owner) override;
-        };
-
-        struct shoot_single_t final : public state_t<uav_booster_t>
+        struct shoot_single_bullet_t final : public state_t<uav_booster_t>
         {
             void enter(uav_booster_t *owner) override;
             void execute(uav_booster_t *owner) override;
@@ -164,10 +162,8 @@ private:
     private:
         state_backoff_t backoff_state;
         state_interim_t interim_state;
-        state_fric_ready_t ready_fric_state;
-        state_ready_t ready_state;
-        shoot_single_t single_state;
-        shoot_continue_bullet_t continue_bullet_state;
+        shoot_single_bullet_t single_state;
+        shoot_continue_bullet_t continue_state;
         shoot_stall_t stall_state;
 
     };
@@ -175,6 +171,9 @@ private:
     passive_state_t passive_state;
     fsm_active_t active_state;
     fsm_t<uav_booster_t> main_fsm;
+
+    static constexpr float FRIC1_RADIUS = 0.015f;
+    static constexpr float FRIC2_RADIUS = 0.015f;
 };
 
 };

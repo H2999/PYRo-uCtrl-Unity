@@ -8,6 +8,7 @@ extern "C"
     extern void pyro_init_thread(void *argument);
     extern void start_debug_task(void *arg);
     status_t pyro_init_ret;
+    status_t pyro_booster_init;
 #if (ROBOT_ID == HERO_ID) || (ROBOT_ID == SUB_HERO_ID)
 #if BOARD_ID == GIMBAL_ID
     extern void hero_gimbal_init(void *argument);
@@ -28,6 +29,7 @@ extern "C"
 #endif
 #if ROBOT_ID == UAV_ID
     extern status_t uav_gimbal_init(void *argument);
+    extern status_t uav_booster_init(void *argument);
 #endif
     void start_mission_planer_task(void const *argument)
     {
@@ -60,6 +62,7 @@ extern "C"
 
 #if ROBOT_ID == UAV_ID
         pyro_init_ret = uav_gimbal_init(nullptr);
+        pyro_booster_init = uav_booster_init(nullptr);
 #endif
 
 #if DEBUG_MODE

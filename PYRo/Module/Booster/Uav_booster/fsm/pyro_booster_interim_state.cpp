@@ -1,0 +1,34 @@
+#include "pyro_uav_booster.h"
+using namespace pyro;
+
+void uav_booster_t::fsm_active_t::state_interim_t::enter(uav_booster_t *owner)
+{
+
+}
+
+void uav_booster_t::fsm_active_t::state_interim_t::execute(uav_booster_t *owner)
+{
+    if (abs(owner->booster_ctx.data_ctx.current_fric_mps[0] -
+            owner->booster_ctx.data_ctx.target_fric_mps[0]) < 0.5f &&
+        abs(owner->booster_ctx.data_ctx.current_fric_mps[1] -
+            owner->booster_ctx.data_ctx.target_fric_mps[1]) < 0.5f)
+    {
+        if (owner->booster_ctx.cmd->single_mode)
+        {
+            request_switch(&owner->active_state.single_state);
+        }
+        if (owner->booster_ctx.cmd->continue_mode)
+        {
+            request_switch(&owner->active_state.continue_state);
+        }
+        request_switch(&owner->active_state.continue_state);
+    }
+
+    owner->trigger_speed_control();
+    owner->send_trigger_command();
+}
+
+void uav_booster_t::fsm_active_t::state_interim_t::exit(uav_booster_t *owner)
+{
+
+}
