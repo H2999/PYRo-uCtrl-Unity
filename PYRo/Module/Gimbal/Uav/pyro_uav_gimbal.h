@@ -102,12 +102,8 @@ private:
         float roll_motor_angle{};
         float yaw_motor_angle{};
 
-        float yaw_angle_increase{};
-        float yaw_angle_error{};
-        float pitch_angle_increase{};
-        float pitch_angle_error{};
-        float roll_angle_increase{};
-        float roll_angle_error{};
+        float yaw_real_max_limit_angle{};
+        float yaw_real_min_limit_angle{};
 
         struct correct_imu_ctx_t
         {

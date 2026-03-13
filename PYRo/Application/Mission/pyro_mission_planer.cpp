@@ -63,7 +63,7 @@ extern "C"
 
 #if ROBOT_ID == UAV_ID
         pyro_init_ret = uav_gimbal_init(nullptr);
-        pyro_booster_init = uav_booster_init(nullptr);
+        // pyro_booster_init = uav_booster_init(nullptr);
         xTaskCreate(uav_pc_com_init, "pyro_uav_autoaim_init", 512, nullptr,
                     configMAX_PRIORITIES - 1, nullptr);
 #endif
