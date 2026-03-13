@@ -1,6 +1,7 @@
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
         PYRo/Application/Mission/Uav/pyro_uav_gimbal_app.cpp
         PYRo/Application/Mission/Uav/pyro_uav_booster_app.cpp
+        PYRo/Application/Mission/Uav/pyro_pc_com.cpp
 
         PYRo/Module/Gimbal/Uav/pyro_uav_gimbal.cpp
         PYRo/Module/Gimbal/Uav/fsm/pyro_active_state.cpp

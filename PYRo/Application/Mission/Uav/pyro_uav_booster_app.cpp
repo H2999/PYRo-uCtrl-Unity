@@ -43,8 +43,7 @@ extern "C"
         if (dr16_drv_t::sw_ctrl_t::SW_MID_TO_UP == p_ctrl->rc.s_l.ctrl)
         {
             uav_booster_cmd_ptr->trigger_enable = true;
-            // uav_booster_cmd_ptr->continue_mode = true;
-            uav_booster_cmd_ptr->single_mode = true;
+            uav_booster_cmd_ptr->continue_mode = true;
         }
 
     }

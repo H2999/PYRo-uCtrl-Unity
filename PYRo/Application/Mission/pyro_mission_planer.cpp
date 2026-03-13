@@ -7,6 +7,7 @@ extern "C"
 {
     extern void pyro_init_thread(void *argument);
     extern void start_debug_task(void *arg);
+    extern void uav_pc_com_init(void *argument);
     status_t pyro_init_ret;
     status_t pyro_booster_init;
 #if (ROBOT_ID == HERO_ID) || (ROBOT_ID == SUB_HERO_ID)
@@ -63,6 +64,8 @@ extern "C"
 #if ROBOT_ID == UAV_ID
         pyro_init_ret = uav_gimbal_init(nullptr);
         pyro_booster_init = uav_booster_init(nullptr);
+        xTaskCreate(uav_pc_com_init, "pyro_uav_autoaim_init", 512, nullptr,
+                    configMAX_PRIORITIES - 1, nullptr);
 #endif
 
 #if DEBUG_MODE
