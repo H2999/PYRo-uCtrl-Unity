@@ -16,7 +16,7 @@ void uav_booster_t::fsm_active_t::state_backoff_t::execute(uav_booster_t *owner)
         request_switch(&owner->active_state.interim_state);
         return;
     }
-    owner->booster_ctx.data_ctx.target_trigger_radps = 6.0f;
+    owner->booster_ctx.data_ctx.target_trigger_radps = -6.0f;
     owner->trigger_speed_control();
     owner->send_trigger_command();
 }

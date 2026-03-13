@@ -9,12 +9,11 @@ void uav_booster_t::fsm_active_t::shoot_single_bullet_t::enter(uav_booster_t *ow
 
 void uav_booster_t::fsm_active_t::shoot_single_bullet_t::execute(uav_booster_t *owner)
 {
-    // if (owner->booster_ctx.cmd->trigger_enable)
-    // {
-    //     owner->booster_ctx.cmd->trigger_enable = false;
+    if (owner->booster_ctx.cmd->single_mode)
+    {
         owner->booster_ctx.cmd->single_mode = false;
-        owner->booster_ctx.data_ctx.target_trigger_rad += PI / 6;
-    // }
+        owner->booster_ctx.data_ctx.target_trigger_rad += PI / 8;
+    }
 
     const float error = owner->booster_ctx.data_ctx.target_trigger_rad - owner->booster_ctx.data_ctx.current_trigger_rad;
     if (abs(error) < 0.05f)

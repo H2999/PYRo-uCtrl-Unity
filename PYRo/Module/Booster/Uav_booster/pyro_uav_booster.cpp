@@ -16,18 +16,18 @@ status_t uav_booster_t::_init()
     booster_ctx.cfg.motor_cfg.fric_wheel[0] = new dji_m3508_motor_drv_t(dji_motor_tx_frame_t::id_2,can_hub_t::can2);
     booster_ctx.cfg.motor_cfg.fric_wheel[1] = new dji_m3508_motor_drv_t(dji_motor_tx_frame_t::id_1,can_hub_t::can2);
     //拨弹盘电机初始化
-    booster_ctx.cfg.motor_cfg.trigger_wheel = new dji_m3508_motor_drv_t(dji_motor_tx_frame_t::id_3,can_hub_t::can2);
+    booster_ctx.cfg.motor_cfg.trigger_wheel = new dji_m2006_motor_drv_t(dji_motor_tx_frame_t::id_4,can_hub_t::can2);
 
     //摩擦轮pid初始化
-    booster_ctx.cfg.pid_cfg.fric_pid[0] = new pid_t(6.40f, 0.02f, 0.02f,2.5f,
-        20, 320, 80, 4);
-    booster_ctx.cfg.pid_cfg.fric_pid[1] = new pid_t(6.9f, 0.02f, 0.02f,2.5f,
-        20, 320, 80, 4);
+    booster_ctx.cfg.pid_cfg.fric_pid[0] = new pid_t(10.40f, 0.02f, 0.02f,2.5f,
+        50, 320, 80, 4);
+    booster_ctx.cfg.pid_cfg.fric_pid[1] = new pid_t(10.9f, 0.02f, 0.02f,2.5f,
+        50, 320, 80, 4);
     //拨弹盘pid初始化
     booster_ctx.cfg.pid_cfg.trigger_position_pid =
-        new pid_t(3.4f, 0, 0, 1.0f, 10.0f, 200, 100, 4);
+        new pid_t(5.4f, 0, 0, 1.0f, 20.0f, 200, 100, 4);
     booster_ctx.cfg.pid_cfg.trigger_speed_pid =
-        new pid_t(1.8f, 0, 0.005f, 0, 20.0f, 200, 100, 4);
+        new pid_t(5.8f, 0, 0.005f, 0, 40.0f, 200, 100, 4);
     return PYRO_OK;
 }
 
@@ -131,13 +131,13 @@ void uav_booster_t::trigger_speed_control()
 
 void uav_booster_t::send_fric_command()
 {
-//     booster_ctx.cfg.motor_cfg.fric_wheel[0]->send_torque(booster_ctx.data_ctx.fric_output_torque[0]);
-//     booster_ctx.cfg.motor_cfg.fric_wheel[1]->send_torque(booster_ctx.data_ctx.fric_output_torque[1]);
+     booster_ctx.cfg.motor_cfg.fric_wheel[0]->send_torque(booster_ctx.data_ctx.fric_output_torque[0]);
+     booster_ctx.cfg.motor_cfg.fric_wheel[1]->send_torque(booster_ctx.data_ctx.fric_output_torque[1]);
 }
 
 void uav_booster_t::send_trigger_command()
 {
-    // booster_ctx.cfg.motor_cfg.trigger_wheel->send_torque(booster_ctx.data_ctx.trigger_output_torque);
+    booster_ctx.cfg.motor_cfg.trigger_wheel->send_torque(booster_ctx.data_ctx.trigger_output_torque);
 }
 
 } // namespace pyro

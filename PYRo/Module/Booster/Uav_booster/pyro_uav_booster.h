@@ -11,16 +11,18 @@ namespace pyro
 //命令模板
 struct uav_booster_cmd_t final : public cmd_base_t
 {
-    bool fric_on;               // 摩擦轮开启
     bool trigger_enable;        // 拨弹开启
     float target_fric1_mps;   // 第一级摩擦轮目标转速
     float target_fric2_mps;   // 第二级摩擦轮目标转速
+
+    float target_trigger_radps;
 
     bool single_mode;
     bool continue_mode;
 
     uav_booster_cmd_t()
-        : fric_on(false), trigger_enable(false), target_fric1_mps(0), target_fric2_mps(0), single_mode(false), continue_mode(false)
+        :trigger_enable(false), target_fric1_mps(0), target_fric2_mps(0),target_trigger_radps(0),
+        single_mode(false), continue_mode(false)
     {
     }
 };

@@ -6,11 +6,11 @@ void uav_booster_t::fsm_active_t::shoot_stall_t::enter(uav_booster_t *owner)
     owner->booster_ctx.data_ctx.target_trigger_rad = owner->booster_ctx.data_ctx.current_trigger_rad;
     owner->booster_ctx.data_ctx.target_trigger_radps = 0;
 
-    if (&owner->active_state.backoff_state == owner->active_state._last_state)
-    {
-        owner->booster_ctx.data_ctx.target_trigger_rad -= 0.6f; // 待调整
-    }
-    else if (&owner->active_state.stall_state ==
+    // if (&owner->active_state.backoff_state == owner->active_state._last_state)
+    // {
+    //     owner->booster_ctx.data_ctx.target_trigger_rad -= 0.6f; // 待调整
+    // }
+    if (&owner->active_state.stall_state ==
              owner->active_state._last_state)
     {
     }

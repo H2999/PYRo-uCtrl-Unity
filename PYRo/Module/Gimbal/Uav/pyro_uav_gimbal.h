@@ -103,10 +103,11 @@ private:
         float yaw_motor_angle{};
 
         float yaw_angle_increase{};
-        float real_target_yaw_angle{};
-
+        float yaw_angle_error{};
+        float pitch_angle_increase{};
+        float pitch_angle_error{};
         float roll_angle_increase{};
-        float real_target_roll_angle{};
+        float roll_angle_error{};
 
         struct correct_imu_ctx_t
         {
@@ -156,13 +157,14 @@ private:
     static constexpr float yaw_max_value = 1.6f;
     static constexpr float yaw_min_value = -2.07f;
 
-    static constexpr float pitch_max_value = 0.73f;//2,38f
-    static constexpr float pitch_min_value = -0.32f;//-2.93
+    static constexpr float pitch_max_value = 0.73f;//2,38f  2.78f
+    static constexpr float pitch_min_value = -0.32f;//-2.89f
 
     static constexpr float roll_max_value = 0.34f;//2.4f
     static constexpr float roll_min_value = -0.34f;//1.7f
 
-    static constexpr float yaw_to_roll = 0.062f;
+    // static constexpr float roll_max_value = 2.35f;
+    // static constexpr float roll_min_value = 1.85f;
 
     // typedef struct {
     //     float r;      // 快速因子：决定追踪的加速度（r 越大，起步越猛）
