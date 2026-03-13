@@ -12,6 +12,11 @@ void uav_booster_t::fsm_active_t::shoot_continue_bullet_t::execute(uav_booster_t
     {
         owner->booster_ctx.data_ctx.target_trigger_radps = 5.0f; //待定
     }
+    else
+    {
+        owner->booster_ctx.data_ctx.target_trigger_radps = 0.0f;
+        request_switch(&owner->active_state.interim_state);
+    }
 
     owner->trigger_speed_control();
     owner->send_trigger_command();

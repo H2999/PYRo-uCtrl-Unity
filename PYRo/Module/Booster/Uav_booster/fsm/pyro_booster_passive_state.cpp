@@ -35,9 +35,7 @@ void uav_booster_t::passive_state_t::execute(uav_booster_t *owner)
 
 void uav_booster_t::passive_state_t::exit(uav_booster_t *owner)
 {
-    owner->booster_ctx.cfg.motor_cfg.fric_wheel[0]->disable();
-    owner->booster_ctx.cfg.motor_cfg.fric_wheel[1]->disable();
-    owner->booster_ctx.cfg.motor_cfg.trigger_wheel->disable();
+
 }
 
 }

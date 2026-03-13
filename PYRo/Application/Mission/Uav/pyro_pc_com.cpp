@@ -27,7 +27,7 @@ extern "C"
             // operate_bytes.output_data.state = 0x00;
             // operate_bytes.output_data.autoaim = 0x01;
             // operate_bytes.output_data.enemy_color = 0x0;
-            operate_bytes.output_data.curr_speed = 0.0f;
+            // operate_bytes.output_data.curr_speed = 0.0f;
             // operate_bytes.output_data.shoot_delay = static_cast<uint16_t>(avg_delay);
 
             operate_bytes.output_data.curr_yaw = 0;   // 应该显示为 00 00 80 3F
