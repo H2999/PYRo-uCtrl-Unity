@@ -3,10 +3,12 @@
 #include "task.h"
 #include "cstring"
 #include "pyro_core_config.h"
+#include "pyro_uav_booster.h"
 #include "Gimbal/Uav/pyro_uav_gimbal.h"
 
 
 extern pyro::uav_gimbal_t *gimbal_ptr;
+extern pyro::uav_booster_t *uav_booster_ptr;
 
 namespace pyro
 {
@@ -96,10 +98,8 @@ void jcom_drv_t::send()
 
 void jcom_drv_t::thread()
 {
-    add_data(&gimbal_ptr->gimbal_ctx.data.yaw_motor_angle);
-    add_data(&gimbal_ptr->gimbal_ctx.data._current_yaw_angle);
-    add_data(&gimbal_ptr->gimbal_ctx.data.correct_imu_ctx.correct_yaw_angle);
-
+    add_data(&uav_booster_ptr->booster_ctx.data_ctx.target_trigger_rad);
+    add_data(&uav_booster_ptr->booster_ctx.data_ctx.current_trigger_rad);
 
     while (true)
     {

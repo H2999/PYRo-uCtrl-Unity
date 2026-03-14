@@ -16,7 +16,6 @@ struct uav_booster_cmd_t final : public cmd_base_t
     float target_fric2_mps;   // 第二级摩擦轮目标转速
 
     float target_trigger_radps;
-
     bool single_mode;
     bool continue_mode;
 
@@ -53,7 +52,7 @@ struct uav_booster_cfg_t
 class uav_booster_t : public module_base_t<uav_booster_t,uav_booster_cmd_t,uav_booster_cfg_t>
 {
     friend class module_base_t<uav_booster_t, uav_booster_cmd_t, uav_booster_cfg_t>;
-    friend class jcom_drv_t;    //调试用
+    friend class jcom_drv_t;
 
     struct data_ctx_t;          //过程中需要用到的数据
     struct booster_ctx_t;       //总的数据
@@ -119,16 +118,6 @@ private:
 
     struct fsm_active_t final : public fsm_t<uav_booster_t>
     {
-        struct state_backoff_t final : public state_t<uav_booster_t>
-        {
-            void enter(uav_booster_t *owner) override;
-            void execute(uav_booster_t *owner) override;
-            void exit(uav_booster_t *owner) override;
-
-        private:
-            float backoff_turnback_start_time{0.0f};
-        };
-
         struct state_interim_t final : public state_t<uav_booster_t>
         {
             void enter(uav_booster_t *owner) override;
@@ -162,7 +151,6 @@ private:
         void on_exit(uav_booster_t *owner) override;
 
     private:
-        state_backoff_t backoff_state;
         state_interim_t interim_state;
         shoot_single_bullet_t single_state;
         shoot_continue_bullet_t continue_state;

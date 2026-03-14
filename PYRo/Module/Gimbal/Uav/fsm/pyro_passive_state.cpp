@@ -25,9 +25,9 @@ void uav_gimbal_t::state_passive_t::execute(uav_gimbal_t *owner)
     owner->gimbal_ctx.data._output_roll_torque = 0;
 
     //下力时停在当前位置 防止下次上力的时候抽动回下力的位置
-    owner->gimbal_ctx.data._target_yaw_angle = owner->gimbal_ctx.data._current_yaw_angle;
-    owner->gimbal_ctx.data._target_pitch_angle = owner->gimbal_ctx.data._current_pitch_angle;
-    owner->gimbal_ctx.data._target_roll_angle = owner->gimbal_ctx.data._current_roll_angle;
+    owner->gimbal_ctx.data._target_yaw_angle = owner->gimbal_ctx.data._current_imu_yaw_angle;
+    owner->gimbal_ctx.data._target_pitch_angle = owner->gimbal_ctx.data._current_imu_pitch_angle;
+    owner->gimbal_ctx.data._target_roll_angle = owner->gimbal_ctx.data._current_imu_roll_angle;
 
     owner->gimbal_ctx.data._target_yaw_speed = 0;
     owner->gimbal_ctx.data._target_pitch_speed = 0;

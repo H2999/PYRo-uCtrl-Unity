@@ -24,7 +24,7 @@ void uav_booster_t::passive_state_t::execute(uav_booster_t *owner)
     owner->booster_ctx.data_ctx.target_trigger_rad = owner->booster_ctx.data_ctx.current_trigger_rad;
     owner->trigger_position_control();
 
-    if (abs(owner->booster_ctx.data_ctx.current_trigger_radps) < 0.05f)
+    if (abs(owner->booster_ctx.data_ctx.current_trigger_radps) < 0.4f)
     {
         owner->booster_ctx.data_ctx.trigger_output_torque = 0.0f;
     }

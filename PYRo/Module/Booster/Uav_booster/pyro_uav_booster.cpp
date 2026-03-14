@@ -20,14 +20,14 @@ status_t uav_booster_t::_init()
 
     //摩擦轮pid初始化
     booster_ctx.cfg.pid_cfg.fric_pid[0] = new pid_t(10.40f, 0.02f, 0.02f,2.5f,
-        50, 320, 80, 4);
+        30, 320, 80, 4);
     booster_ctx.cfg.pid_cfg.fric_pid[1] = new pid_t(10.9f, 0.02f, 0.02f,2.5f,
-        50, 320, 80, 4);
+        30, 320, 80, 4);
     //拨弹盘pid初始化
     booster_ctx.cfg.pid_cfg.trigger_position_pid =
-        new pid_t(5.4f, 0, 0, 1.0f, 20.0f, 200, 100, 4);
+        new pid_t(5.4f, 0.05, 0, 1.0f, 20.0f, 100, 80, 4);
     booster_ctx.cfg.pid_cfg.trigger_speed_pid =
-        new pid_t(5.8f, 0, 0.005f, 0, 40.0f, 200, 100, 4);
+        new pid_t(5.8f, 0.05, 0, 1.0, 40.0f, 100, 80, 4);
     return PYRO_OK;
 }
 
@@ -55,7 +55,6 @@ void uav_booster_t::_update_feedback()
         dji_m2006_motor_drv_t::reciprocal_reduction_ratio;
 
     //获取拨弹盘转速 位置和扭矩
-
     booster_ctx.data_ctx.current_trigger_radps =
             booster_ctx.cfg.motor_cfg.trigger_wheel->get_current_rotate() * reciprocal_ratio;
 
@@ -65,9 +64,7 @@ void uav_booster_t::_update_feedback()
        booster_ctx.cfg.motor_cfg.trigger_wheel->get_current_torque();
 
     const float now_rotor_rad = booster_ctx.cfg.motor_cfg.trigger_wheel->get_current_position();
-
     float delta_rotor   = now_rotor_rad - booster_ctx.data_ctx.last_rotor_rad;
-
     if (delta_rotor > PI)
     {
         delta_rotor -= 2.0f * PI;
@@ -76,13 +73,36 @@ void uav_booster_t::_update_feedback()
     {
         delta_rotor += 2.0f * PI;
     }
-
     // 累积到输出轴总角度
     booster_ctx.data_ctx.total_trigger_rad += delta_rotor * reciprocal_ratio;
 
-    booster_ctx.data_ctx.last_rotor_rad   = now_rotor_rad;
+    booster_ctx.data_ctx.last_rotor_rad  = now_rotor_rad;
 
     booster_ctx.data_ctx.current_trigger_rad = normalize_angle(booster_ctx.data_ctx.total_trigger_rad);
+
+    // const float now_rotor_rad = booster_ctx.cfg.motor_cfg.trigger_wheel->get_current_position();
+    // const float now_rotor_torque = booster_ctx.cfg.motor_cfg.trigger_wheel->get_current_torque();
+    //
+    // float delta_rotor = now_rotor_rad - booster_ctx.data_ctx.last_rotor_rad;
+    // if (delta_rotor > PI)
+    // {
+    //     delta_rotor -= 2.0f * PI;
+    // }
+    // else if (delta_rotor < -PI)
+    // {
+    //     delta_rotor += 2.0f * PI;
+    // }
+    //
+    // booster_ctx.data_ctx.total_trigger_rad += delta_rotor * reciprocal_ratio;
+    //
+    // if (fabsf(booster_ctx.data_ctx.total_trigger_rad) > 2.0f * PI) {
+    //     booster_ctx.data_ctx.total_trigger_rad = fmodf(booster_ctx.data_ctx.total_trigger_rad, 2.0f * PI);
+    // }
+    //
+    // booster_ctx.data_ctx.current_trigger_radps = now_rotor_rad * reciprocal_ratio;
+    // booster_ctx.data_ctx.current_trigger_rad = normalize_angle(booster_ctx.data_ctx.total_trigger_rad);
+    // booster_ctx.data_ctx.current_trigger_torque = now_rotor_torque;
+    // booster_ctx.data_ctx.last_rotor_rad = now_rotor_rad;
 }
 
 void uav_booster_t::_fsm_execute()
@@ -121,6 +141,9 @@ void uav_booster_t::trigger_position_control()
 
     booster_ctx.data_ctx.target_trigger_radps = booster_ctx.cfg.pid_cfg.trigger_position_pid->calculate
         (booster_ctx.data_ctx.target_trigger_rad, booster_ctx.data_ctx.current_trigger_rad);
+
+    booster_ctx.data_ctx.trigger_output_torque = booster_ctx.cfg.pid_cfg.trigger_speed_pid->calculate(
+   booster_ctx.data_ctx.target_trigger_radps,booster_ctx.data_ctx.current_trigger_radps);
 }
 
 void uav_booster_t::trigger_speed_control()
@@ -131,13 +154,13 @@ void uav_booster_t::trigger_speed_control()
 
 void uav_booster_t::send_fric_command()
 {
-     // booster_ctx.cfg.motor_cfg.fric_wheel[0]->send_torque(booster_ctx.data_ctx.fric_output_torque[0]);
-     // booster_ctx.cfg.motor_cfg.fric_wheel[1]->send_torque(booster_ctx.data_ctx.fric_output_torque[1]);
+     booster_ctx.cfg.motor_cfg.fric_wheel[0]->send_torque(booster_ctx.data_ctx.fric_output_torque[0]);
+     booster_ctx.cfg.motor_cfg.fric_wheel[1]->send_torque(booster_ctx.data_ctx.fric_output_torque[1]);
 }
 
 void uav_booster_t::send_trigger_command()
 {
-    // booster_ctx.cfg.motor_cfg.trigger_wheel->send_torque(booster_ctx.data_ctx.trigger_output_torque);
+    booster_ctx.cfg.motor_cfg.trigger_wheel->send_torque(booster_ctx.data_ctx.trigger_output_torque);
 }
 
 } // namespace pyro

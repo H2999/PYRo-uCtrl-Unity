@@ -31,9 +31,9 @@ void gimbal_rc2cmd(void const *rc_ctrl)
     }
     gimbal_cmd_ptr->mode = cmd_base_t::mode_t::ACTIVE;
 
-    gimbal_cmd_ptr->yaw_delta_angle   = p_ctrl->rc.ch_rx * rc_sensitivity;
+    gimbal_cmd_ptr->yaw_delta_angle   = - p_ctrl->rc.ch_rx * rc_sensitivity;
     gimbal_cmd_ptr->pitch_delta_angle = - p_ctrl->rc.ch_ry * rc_sensitivity;
-    gimbal_cmd_ptr->roll_delta_angle  = p_ctrl->rc.ch_lx * rc_sensitivity;
+    gimbal_cmd_ptr->roll_delta_angle  = - p_ctrl->rc.ch_lx * rc_sensitivity;
 }
 
 void uav_gimbal_main_thread(void *argument)

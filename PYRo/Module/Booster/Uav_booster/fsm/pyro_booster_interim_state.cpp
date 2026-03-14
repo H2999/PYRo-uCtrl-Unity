@@ -23,7 +23,6 @@ void uav_booster_t::fsm_active_t::state_interim_t::execute(uav_booster_t *owner)
             {
                 request_switch(&owner->active_state.continue_state);
             }
-            // request_switch(&owner->active_state.continue_state);
         }
     }
 

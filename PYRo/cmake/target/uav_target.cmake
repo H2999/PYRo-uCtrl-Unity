@@ -9,7 +9,6 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
 
         PYRo/Module/Booster/Uav_booster/fsm/pyro_booster_active_state.cpp
         PYRo/Module/Booster/Uav_booster/fsm/pyro_booster_passive_state.cpp
-        PYRo/Module/Booster/Uav_booster/fsm/pyro_booster_backoff_state.cpp
         PYRo/Module/Booster/Uav_booster/fsm/pyro_booster_interim_state.cpp
         PYRo/Module/Booster/Uav_booster/fsm/pyro_booster_single_fire_state.cpp
         PYRo/Module/Booster/Uav_booster/fsm/pyro_booster_continue_fire_state.cpp

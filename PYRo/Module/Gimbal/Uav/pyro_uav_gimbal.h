@@ -85,13 +85,13 @@ private:
         float _target_roll_speed{};
 
         //当前角度
-        float _current_yaw_angle{};
-        float _current_pitch_angle{};
-        float _current_roll_angle{};
+        float _current_imu_yaw_angle{};
+        float _current_imu_pitch_angle{};
+        float _current_imu_roll_angle{};
         // 当前速度
-        float _current_pitch_speed{};
-        float _current_yaw_speed{};
-        float _current_roll_speed{};
+        float _current_imu_pitch_speed{};
+        float _current_imu_yaw_speed{};
+        float _current_imu_roll_speed{};
 
         // 输出扭矩
         float _output_yaw_torque{};
@@ -104,6 +104,9 @@ private:
 
         float yaw_real_max_limit_angle{};
         float yaw_real_min_limit_angle{};
+
+        float roll_real_max_limit_angle{};
+        float roll_real_min_limit_angle{};
 
         struct correct_imu_ctx_t
         {
@@ -131,14 +134,14 @@ private:
     gimbal_ctx_t gimbal_ctx;
     ins_drv_t *gimbal_ins;
 
-    struct state_passive_t final : public state_t<uav_gimbal_t>
+    struct state_passive_t final : state_t<uav_gimbal_t>
     {
         void enter(uav_gimbal_t *owner) override;
         void execute(uav_gimbal_t *owner) override;
         void exit(uav_gimbal_t *owner) override;
     };
 
-    struct state_active_t final : public state_t<uav_gimbal_t>
+    struct state_active_t final : state_t<uav_gimbal_t>
     {
         void enter(uav_gimbal_t *owner) override;
         void execute(uav_gimbal_t *owner) override;
@@ -150,17 +153,16 @@ private:
     state_active_t state_active;
     fsm_t<uav_gimbal_t> main_fsm;
 
-    static constexpr float yaw_max_value = 1.6f;
-    static constexpr float yaw_min_value = -2.07f;
+    static constexpr float yaw_motor_max_value = 1.18730116f;
+    static constexpr float yaw_motor_min_value = -1.41969919f;
 
-    static constexpr float pitch_max_value = 0.73f;//2,38f  2.78f
-    static constexpr float pitch_min_value = -0.32f;//-2.89f
+    static constexpr float pitch_max_value = 0.73f;
+    static constexpr float pitch_min_value = -0.32f;
 
-    static constexpr float roll_max_value = 0.34f;//2.4f
-    static constexpr float roll_min_value = -0.34f;//1.7f
+    static constexpr float roll_max_value = 0.34f;
+    static constexpr float roll_min_value = -0.34f;
 
-    // static constexpr float roll_max_value = 2.35f;
-    // static constexpr float roll_min_value = 1.85f;
+    static constexpr float YAW_OFFSET_RAD = 3.01734018f;
 
     // typedef struct {
     //     float r;      // 快速因子：决定追踪的加速度（r 越大，起步越猛）

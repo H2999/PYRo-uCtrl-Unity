@@ -85,6 +85,7 @@ struct FrameHeader
 struct FrameTailer
 {
     uint16_t crc16;
+    uint8_t end;
 };
 
 struct OutputData
