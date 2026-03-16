@@ -8,6 +8,8 @@ uav_booster_t::uav_booster_t() : module_base_t("quad_booster")
 {
     booster_ctx = {};
     main_fsm.change_state(&passive_state);
+
+    booster_ctx.auto_ctx.fire_enable = 0;
 }
 
 status_t uav_booster_t::_init()
@@ -19,15 +21,15 @@ status_t uav_booster_t::_init()
     booster_ctx.cfg.motor_cfg.trigger_wheel = new dji_m2006_motor_drv_t(dji_motor_tx_frame_t::id_4,can_hub_t::can2);
 
     //摩擦轮pid初始化
-    booster_ctx.cfg.pid_cfg.fric_pid[0] = new pid_t(10.40f, 0.02f, 0.02f,2.5f,
-        30, 320, 80, 4);
-    booster_ctx.cfg.pid_cfg.fric_pid[1] = new pid_t(10.9f, 0.02f, 0.02f,2.5f,
-        30, 320, 80, 4);
+    booster_ctx.cfg.pid_cfg.fric_pid[0] = new pid_t(6.40f, 0.02f, 0.02f,2.5f,
+        20, 320, 80, 4);
+    booster_ctx.cfg.pid_cfg.fric_pid[1] = new pid_t(6.40f, 0.02f, 0.02f,2.5f,
+        20, 320, 80, 4);
     //拨弹盘pid初始化
     booster_ctx.cfg.pid_cfg.trigger_position_pid =
-        new pid_t(5.4f, 0.05, 0, 1.0f, 20.0f, 100, 80, 4);
+        new pid_t(8.4f, 0.05, 0, 1.0f, 10.0f, 100, 80, 4);
     booster_ctx.cfg.pid_cfg.trigger_speed_pid =
-        new pid_t(5.8f, 0.05, 0, 1.0, 40.0f, 100, 80, 4);
+        new pid_t(6.8f, 0.05, 0, 1.0, 15.0f, 100, 80, 4);
     return PYRO_OK;
 }
 
@@ -42,6 +44,8 @@ float uav_booster_t::normalize_angle(float angle)
 
 void uav_booster_t::_update_feedback()
 {
+    booster_ctx.auto_ctx.fire_enable = booster_ctx.cmd->booster_auto_flag;
+
     //更新反馈
     booster_ctx.cfg.motor_cfg.fric_wheel[0]->update_feedback();
     booster_ctx.cfg.motor_cfg.fric_wheel[1]->update_feedback();

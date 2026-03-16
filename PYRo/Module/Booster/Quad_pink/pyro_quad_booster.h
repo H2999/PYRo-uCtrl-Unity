@@ -162,6 +162,14 @@ class quad_booster_t final
             void execute(owner *owner) override;
             void exit(owner *owner) override;
         };
+
+        struct state_auto_t final : public state_t<owner>
+        {
+            void enter(owner *owner) override;   
+            void execute(owner *owner) override;
+            void exit(owner *owner) override;
+        };
+
         void on_enter(owner *owner) override;
         void on_execute(owner *owner) override;
         void on_exit(owner *owner) override;

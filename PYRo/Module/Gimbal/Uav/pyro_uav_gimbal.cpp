@@ -11,6 +11,8 @@ uav_gimbal_t::uav_gimbal_t()
     gimbal_ctx = {};
     gimbal_ins = ins_drv_t::get_instance();
     gimbal_ins->init();
+
+    gimbal_ctx.auto_ctx.auto_enable = false;
 }
 
 status_t uav_gimbal_t::_init()
@@ -27,25 +29,27 @@ status_t uav_gimbal_t::_init()
     static_cast<dm_motor_drv_t *>(gimbal_ctx.motor.pitch_motor)->set_rotate_range(-15.333333, 15.333333);
     static_cast<dm_motor_drv_t *>(gimbal_ctx.motor.pitch_motor)->set_torque_range(-3, 3);
 
-    gimbal_ctx.pid.yaw_position_pid = new pid_t(12.4f,0.002f,0,1.0f,
-                8.0f,80,60,4);
-    gimbal_ctx.pid.pitch_position_pid = new pid_t(13.25f,0.0008f,0.0008f,1.3f,
-                8.0f,90,50,4);
-    gimbal_ctx.pid.roll_position_pid = new pid_t(5.28f,0.0006f,0.0008f,1.3f,
+    gimbal_ctx.pid.yaw_position_pid = new pid_t(12.4f,0.008f,0.003,0.2f,
+                8.0f,60,25,4);
+    gimbal_ctx.pid.pitch_position_pid = new pid_t(9.25f,0.007f,0.008f,0.6f,
+                8.0f,60,35,4);
+    gimbal_ctx.pid.roll_position_pid = new pid_t(5.28f,0.0006f,0.0008f,1.0f,
                 5.0f,80,60,4);
 
-    gimbal_ctx.pid.yaw_speed_pid = new pid_t(0.89f,0.0025f,0.0008f,1.2f,
-                3.0f,90,80,4);
-    gimbal_ctx.pid.pitch_speed_pid = new pid_t(0.89f,0.008f,0.0008f,1.3f,
-                3.0f,90,50,4);
+    gimbal_ctx.pid.yaw_speed_pid = new pid_t(0.89f,0.0025f,0.0008f,0.2f,
+                3.0f,60,20,4);
+    gimbal_ctx.pid.pitch_speed_pid = new pid_t(0.89f,0.008f,0.0008f,0.6f,
+                3.0f,60,30,4);
     gimbal_ctx.pid.roll_speed_pid = new pid_t(0.75f,0.0005f,0.0004f,1.0f,
-                10.0f,80,70,4);
+                8.0f,40,20,4);
 
     return PYRO_OK;
 }
 
 void uav_gimbal_t::_update_feedback()
 {
+    gimbal_ctx.auto_ctx.auto_enable = gimbal_ctx.cmd->auto_flag;
+
     gimbal_ctx.motor.yaw_motor->update_feedback();
     gimbal_ctx.motor.pitch_motor->update_feedback();
     gimbal_ctx.motor.roll_motor->update_feedback();
@@ -92,10 +96,12 @@ void uav_gimbal_t::gimbal_control(gimbal_ctx_t *ctx)
              ctx->data._target_pitch_angle, ctx->data._current_imu_pitch_angle);
 
     ctx->data._target_roll_speed = ctx->pid.roll_position_pid->calculate(
-            ctx->data.final_roll_angle,ctx->data._current_imu_roll_angle);
+            0,ctx->data._current_imu_roll_angle);
 
     ctx->data._output_yaw_torque = - ctx->pid.yaw_speed_pid->calculate(
             ctx->data._target_yaw_speed,ctx->data._current_imu_yaw_speed);
+
+    // float Gravity_Compensation = 0.22f * cosf(ctx->data._current_imu_pitch_angle);
 
     ctx->data._output_pitch_torque = ctx->pid.pitch_speed_pid->calculate(
             ctx->data._target_pitch_speed,ctx->data._current_imu_pitch_speed);
@@ -110,7 +116,8 @@ void uav_gimbal_t::send_motor_command(const gimbal_ctx_t *ctx)
 
      ctx->motor.pitch_motor->send_torque(ctx->data._output_pitch_torque);
 
-     ctx->motor.roll_motor->send_torque(ctx->data._output_roll_torque);
+     // ctx->motor.roll_motor->send_torque(ctx->data._output_roll_torque);
+    ctx->motor.roll_motor->send_torque(0);
 }
 
 void uav_gimbal_t::normalize_angle(float& angle)
@@ -123,6 +130,21 @@ void uav_gimbal_t::normalize_angle(float& angle)
     {
         angle += 2.0f * PI;
     }
+}
+
+float uav_gimbal_t::get_current_yaw_angle() const
+{
+    return gimbal_ctx.data._current_imu_yaw_angle;
+}
+
+float uav_gimbal_t::get_current_pitch_angle() const
+{
+    return gimbal_ctx.data._current_imu_pitch_angle;
+}
+
+float uav_gimbal_t::get_current_roll_angle() const
+{
+    return gimbal_ctx.data._current_imu_roll_angle;
 }
 
 }

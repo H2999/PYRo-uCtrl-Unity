@@ -19,14 +19,15 @@ struct uav_booster_cmd_t final : public cmd_base_t
     bool single_mode;
     bool continue_mode;
 
+    uint8_t booster_auto_flag;
+
     uav_booster_cmd_t()
         :trigger_enable(false), target_fric1_mps(0), target_fric2_mps(0),target_trigger_radps(0),
-        single_mode(false), continue_mode(false)
+        single_mode(false), continue_mode(false),booster_auto_flag(0)
     {
     }
 };
 
-//cfg模板 主要存放的是在开始的时候配置一次的变量 如电机和pid
 struct uav_booster_cfg_t
 {
     struct motor_cfg_t
@@ -51,11 +52,12 @@ struct uav_booster_cfg_t
 //具体实现的模板类 继承自module模块
 class uav_booster_t : public module_base_t<uav_booster_t,uav_booster_cmd_t,uav_booster_cfg_t>
 {
-    friend class module_base_t<uav_booster_t, uav_booster_cmd_t, uav_booster_cfg_t>;
+    friend class module_base_t;
     friend class jcom_drv_t;
 
-    struct data_ctx_t;          //过程中需要用到的数据
-    struct booster_ctx_t;       //总的数据
+    struct data_ctx_t;
+    struct booster_auto_ctx_t;
+    struct booster_ctx_t;
 
 public:
     uav_booster_t(const uav_booster_t &) = delete;
@@ -80,7 +82,6 @@ private:
 
     struct data_ctx_t
     {
-        // 核心逻辑变量
         float last_rotor_rad{0};
         float total_trigger_rad{0};
 
@@ -100,11 +101,19 @@ private:
         float trigger_output_torque{0};
     };
 
+    struct booster_auto_ctx_t
+    {
+        uint8_t fire_enable;
+        float avg_speed;
+
+    };
+
     struct booster_ctx_t
     {
         uav_booster_cfg_t cfg;
         data_ctx_t data_ctx;
         uav_booster_cmd_t *cmd{};
+        booster_auto_ctx_t auto_ctx{};
     };
 
     booster_ctx_t booster_ctx;
@@ -146,6 +155,13 @@ private:
             void exit(uav_booster_t *owner) override;
         };
 
+        struct shoot_auto_aim_t final : public state_t<uav_booster_t>
+        {
+            void enter(uav_booster_t *owner) override;
+            void execute(uav_booster_t *owner) override;
+            void exit(uav_booster_t *owner) override;
+        };
+
         void on_enter(uav_booster_t *owner) override;
         void on_execute(uav_booster_t *owner) override;
         void on_exit(uav_booster_t *owner) override;
@@ -155,15 +171,15 @@ private:
         shoot_single_bullet_t single_state;
         shoot_continue_bullet_t continue_state;
         shoot_stall_t stall_state;
-
+        shoot_auto_aim_t auto_aim_state;
     };
 
     passive_state_t passive_state;
     fsm_active_t active_state;
     fsm_t<uav_booster_t> main_fsm;
 
-    static constexpr float FRIC1_RADIUS = 0.015f;
-    static constexpr float FRIC2_RADIUS = 0.015f;
+    static constexpr float FRIC1_RADIUS = 0.03f;
+    static constexpr float FRIC2_RADIUS = 0.03f;
 };
 
 };

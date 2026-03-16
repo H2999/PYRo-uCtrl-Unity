@@ -1,12 +1,13 @@
 #include "pyro_module_base.h"
 #include "pyro_rc_hub.h"
+#include "pyro_uart_message.h"
 #include "Gimbal/Uav/pyro_uav_gimbal.h"
-#include "pyro_uav_booster.h"
 
 using namespace pyro;
 uav_gimbal_t *gimbal_ptr                       = nullptr;
 uav_gimbal_cmd_t *gimbal_cmd_ptr               = nullptr;
 dr16_drv_t::dr16_ctrl_t const *rc_ctrl_ptr = nullptr;
+extern OperateBytes operate_bytes;
 
 static constexpr float rc_sensitivity = 0.0025f;
 
@@ -31,9 +32,29 @@ void gimbal_rc2cmd(void const *rc_ctrl)
     }
     gimbal_cmd_ptr->mode = cmd_base_t::mode_t::ACTIVE;
 
-    gimbal_cmd_ptr->yaw_delta_angle   = - p_ctrl->rc.ch_rx * rc_sensitivity;
-    gimbal_cmd_ptr->pitch_delta_angle = - p_ctrl->rc.ch_ry * rc_sensitivity;
-    gimbal_cmd_ptr->roll_delta_angle  = - p_ctrl->rc.ch_lx * rc_sensitivity;
+
+    if (dr16_drv_t::sw_state_t::SW_DOWN == p_ctrl->rc.s_r.state)
+    {
+        gimbal_cmd_ptr->auto_flag = true;
+
+        gimbal_cmd_ptr->yaw_target_angle = operate_bytes.output_data.shoot_yaw;
+        gimbal_cmd_ptr->pitch_target_angle = operate_bytes.output_data.shoot_pitch;
+        gimbal_cmd_ptr->yaw_delta_angle   = 0;
+        gimbal_cmd_ptr->pitch_delta_angle = 0;
+        gimbal_cmd_ptr->roll_delta_angle  = 0;
+    }
+    if (dr16_drv_t::sw_state_t::SW_DOWN != p_ctrl->rc.s_r.state)
+    {
+        gimbal_cmd_ptr->auto_flag = false;
+
+        gimbal_cmd_ptr->yaw_delta_angle   = - p_ctrl->rc.ch_rx * rc_sensitivity;
+        gimbal_cmd_ptr->pitch_delta_angle = - p_ctrl->rc.ch_ry * rc_sensitivity;
+        gimbal_cmd_ptr->roll_delta_angle  = - p_ctrl->rc.ch_lx * rc_sensitivity;
+    }
+    // else if (dr16_drv_t::sw_state_t::SW_MID == p_ctrl->rc.s_l.state)
+    // {
+    //     gimbal_cmd_ptr->auto_flag = false;
+    // }
 }
 
 void uav_gimbal_main_thread(void *argument)

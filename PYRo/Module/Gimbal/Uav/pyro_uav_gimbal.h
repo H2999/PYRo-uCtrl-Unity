@@ -16,6 +16,10 @@ struct uav_gimbal_cmd_t final : cmd_base_t
     float pitch_delta_angle;    //pitch轴目标角度
     float roll_delta_angle;     //roll轴目标角度
 
+    uint8_t auto_flag{};
+    float pitch_target_angle{};
+    float yaw_target_angle{};
+
     uav_gimbal_cmd_t()
     :yaw_delta_angle() , pitch_delta_angle(0) , roll_delta_angle(0)
     {
@@ -34,10 +38,15 @@ class uav_gimbal_t final : public module_base_t<uav_gimbal_t,uav_gimbal_cmd_t,ua
     struct pid_ctx_t;
     struct data_ctx_t;
     struct gimbal_ctx_t;
+    struct gimbal_auto_ctx_t;
 
 public:
     uav_gimbal_t(const uav_gimbal_t &)            = delete;
     uav_gimbal_t &operator=(const uav_gimbal_t &) = delete;
+
+    float get_current_yaw_angle() const;
+    float get_current_pitch_angle() const;
+    float get_current_roll_angle() const;
 
 private:
     uav_gimbal_t();
@@ -50,9 +59,9 @@ private:
 
     //派生方法
     static void gimbal_control(gimbal_ctx_t *ctx);
+    static void gimbal_auto_control(gimbal_ctx_t *ctx);
     static void send_motor_command(const gimbal_ctx_t *ctx);
     static void normalize_angle(float& angle);
-    static void gimbal_absolute_angle_limit(uav_gimbal_t *owner);
 
     struct motor_ctx_t
     {
@@ -123,12 +132,20 @@ private:
         correct_imu_ctx_t correct_imu_ctx;
     };
 
+    struct gimbal_auto_ctx_t
+    {
+        uint8_t auto_enable{0};
+        float shoot_yaw_angle{};
+        float shoot_pitch_angle{};
+    };
+
     struct gimbal_ctx_t
     {
         motor_ctx_t motor;
         pid_ctx_t pid;
         data_ctx_t data{};
         uav_gimbal_cmd_t *cmd{};
+        gimbal_auto_ctx_t auto_ctx{};
     };
 
     gimbal_ctx_t gimbal_ctx;
@@ -141,16 +158,35 @@ private:
         void exit(uav_gimbal_t *owner) override;
     };
 
-    struct state_active_t final : state_t<uav_gimbal_t>
+    struct fsm_active_t final : fsm_t<uav_gimbal_t>
     {
-        void enter(uav_gimbal_t *owner) override;
-        void execute(uav_gimbal_t *owner) override;
-        void exit(uav_gimbal_t *owner) override;
+        struct state_rc_t final : state_t<uav_gimbal_t>
+        {
+            void enter(uav_gimbal_t *owner) override;
+            void execute(uav_gimbal_t *owner) override;
+            void exit(uav_gimbal_t *owner) override;
+        };
+
+        struct state_auto_t final : state_t<uav_gimbal_t>
+        {
+            void enter(uav_gimbal_t *owner) override;
+            void execute(uav_gimbal_t *owner) override;
+            void exit(uav_gimbal_t *owner) override;
+        };
+
+        void on_enter(uav_gimbal_t *owner) override;
+        void on_execute(uav_gimbal_t *owner) override;
+        void on_exit(uav_gimbal_t *owner) override;
+
+    private:
+        state_rc_t rc_state;
+        state_auto_t auto_state;
     };
+
 
     // 状态实例
     state_passive_t state_passive;
-    state_active_t state_active;
+    fsm_active_t state_active;
     fsm_t<uav_gimbal_t> main_fsm;
 
     static constexpr float yaw_motor_max_value = 1.18730116f;

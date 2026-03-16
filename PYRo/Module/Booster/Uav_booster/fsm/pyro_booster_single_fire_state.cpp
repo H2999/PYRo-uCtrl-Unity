@@ -15,14 +15,14 @@ void uav_booster_t::fsm_active_t::shoot_single_bullet_t::execute(uav_booster_t *
         owner->booster_ctx.data_ctx.target_trigger_rad += PI / 4;
     }
 
-    // while (owner->booster_ctx.data_ctx.target_trigger_rad > PI)
-    // {
-    //     owner->booster_ctx.data_ctx.target_trigger_rad -= 2 * PI;
-    // }
-    // while (owner->booster_ctx.data_ctx.target_trigger_rad < -PI)
-    // {
-    //     owner->booster_ctx.data_ctx.target_trigger_rad += 2 * PI;
-    // }
+    if (owner->booster_ctx.data_ctx.target_trigger_rad > PI)
+    {
+        owner->booster_ctx.data_ctx.target_trigger_rad -= 2 * PI;
+    }
+    if (owner->booster_ctx.data_ctx.target_trigger_rad < -PI)
+    {
+        owner->booster_ctx.data_ctx.target_trigger_rad += 2 * PI;
+    }
 
     const float error = owner->booster_ctx.data_ctx.target_trigger_rad - owner->booster_ctx.data_ctx.current_trigger_rad;
     if (error > PI)

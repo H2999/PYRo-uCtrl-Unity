@@ -1,14 +1,15 @@
 #include "pyro_jcom.h"
 #include "pyro_core_dma_heap.h"
 #include "task.h"
-#include "cstring"
 #include "pyro_core_config.h"
+#include "pyro_uart_message.h"
 #include "pyro_uav_booster.h"
 #include "Gimbal/Uav/pyro_uav_gimbal.h"
 
 
 extern pyro::uav_gimbal_t *gimbal_ptr;
 extern pyro::uav_booster_t *uav_booster_ptr;
+extern OperateBytes operate_bytes;
 
 namespace pyro
 {
@@ -98,8 +99,16 @@ void jcom_drv_t::send()
 
 void jcom_drv_t::thread()
 {
-    add_data(&uav_booster_ptr->booster_ctx.data_ctx.target_trigger_rad);
-    add_data(&uav_booster_ptr->booster_ctx.data_ctx.current_trigger_rad);
+    add_data(&gimbal_ptr->gimbal_ctx.data._current_imu_pitch_angle);
+    add_data(&gimbal_ptr->gimbal_ctx.data._target_pitch_angle);
+
+    add_data(&uav_booster_ptr->booster_ctx.data_ctx.target_fric_mps[0]);
+    add_data(&uav_booster_ptr->booster_ctx.data_ctx.target_fric_mps[1]);
+
+    add_data(&uav_booster_ptr->booster_ctx.data_ctx.fric_output_torque[0]);
+    add_data(&uav_booster_ptr->booster_ctx.data_ctx.fric_output_torque[1]);
+
+
 
     while (true)
     {

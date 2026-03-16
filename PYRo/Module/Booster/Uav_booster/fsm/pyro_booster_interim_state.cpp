@@ -23,6 +23,10 @@ void uav_booster_t::fsm_active_t::state_interim_t::execute(uav_booster_t *owner)
             {
                 request_switch(&owner->active_state.continue_state);
             }
+            if (owner->booster_ctx.cmd->booster_auto_flag)
+            {
+                request_switch(&owner->active_state.auto_aim_state);
+            }
         }
     }
 

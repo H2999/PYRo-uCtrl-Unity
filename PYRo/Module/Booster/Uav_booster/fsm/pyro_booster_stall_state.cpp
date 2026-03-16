@@ -8,15 +8,15 @@ void uav_booster_t::fsm_active_t::shoot_stall_t::enter(uav_booster_t *owner)
 
     // if (&owner->active_state.backoff_state == owner->active_state._last_state)
     // {
-    //     owner->booster_ctx.data_ctx.target_trigger_rad -= 0.6f; // 待调整
+    //     owner->booster_ctx.data_ctx.target_trigger_rad -= 0.6f;
     // }
-    if (&owner->active_state.stall_state ==
+     if (&owner->active_state.stall_state ==
              owner->active_state._last_state)
     {
     }
     else
     {
-        owner->booster_ctx.data_ctx.target_trigger_rad += 0.2f; // 待调整
+        owner->booster_ctx.data_ctx.target_trigger_rad += 0.5f;
     }
 }
 
@@ -24,7 +24,7 @@ void uav_booster_t::fsm_active_t::shoot_stall_t::execute(uav_booster_t *owner)
 {
     // 回到合适角度后，切换回拨弹状态
     if (fabs(owner->booster_ctx.data_ctx.current_trigger_rad -
-             owner->booster_ctx.data_ctx.target_trigger_rad) < 0.05f)
+             owner->booster_ctx.data_ctx.target_trigger_rad) < 0.1f)
     {
         request_switch(&owner->active_state.interim_state);
     }
