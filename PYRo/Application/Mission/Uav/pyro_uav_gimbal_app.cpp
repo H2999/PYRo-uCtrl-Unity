@@ -31,19 +31,17 @@ void gimbal_rc2cmd(void const *rc_ctrl)
         return;
     }
     gimbal_cmd_ptr->mode = cmd_base_t::mode_t::ACTIVE;
-
-
     if (dr16_drv_t::sw_state_t::SW_DOWN == p_ctrl->rc.s_r.state)
     {
         gimbal_cmd_ptr->auto_flag = true;
 
         gimbal_cmd_ptr->yaw_target_angle = operate_bytes.output_data.shoot_yaw;
         gimbal_cmd_ptr->pitch_target_angle = operate_bytes.output_data.shoot_pitch;
-        gimbal_cmd_ptr->yaw_delta_angle   = 0;
-        gimbal_cmd_ptr->pitch_delta_angle = 0;
-        gimbal_cmd_ptr->roll_delta_angle  = 0;
+        gimbal_cmd_ptr->yaw_delta_angle   = - p_ctrl->rc.ch_rx * rc_sensitivity;
+        gimbal_cmd_ptr->pitch_delta_angle = - p_ctrl->rc.ch_ry * rc_sensitivity;
+        gimbal_cmd_ptr->roll_delta_angle  = - p_ctrl->rc.ch_lx * rc_sensitivity;
     }
-    if (dr16_drv_t::sw_state_t::SW_DOWN != p_ctrl->rc.s_r.state)
+    else if (dr16_drv_t::sw_state_t::SW_MID == p_ctrl->rc.s_r.state)
     {
         gimbal_cmd_ptr->auto_flag = false;
 

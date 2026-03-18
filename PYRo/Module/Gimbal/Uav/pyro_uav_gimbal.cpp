@@ -29,17 +29,17 @@ status_t uav_gimbal_t::_init()
     static_cast<dm_motor_drv_t *>(gimbal_ctx.motor.pitch_motor)->set_rotate_range(-15.333333, 15.333333);
     static_cast<dm_motor_drv_t *>(gimbal_ctx.motor.pitch_motor)->set_torque_range(-3, 3);
 
-    gimbal_ctx.pid.yaw_position_pid = new pid_t(12.4f,0.008f,0.003,0.2f,
+    gimbal_ctx.pid.yaw_position_pid = new pid_t(10.4f,0.008f,0.003,1.0f,
                 8.0f,60,25,4);
-    gimbal_ctx.pid.pitch_position_pid = new pid_t(9.25f,0.007f,0.008f,0.6f,
-                8.0f,60,35,4);
+    gimbal_ctx.pid.pitch_position_pid = new pid_t(12.38f,0.0092f,0.0005f,0.8f,
+                5.0f,60,35,4);
     gimbal_ctx.pid.roll_position_pid = new pid_t(5.28f,0.0006f,0.0008f,1.0f,
                 5.0f,80,60,4);
 
-    gimbal_ctx.pid.yaw_speed_pid = new pid_t(0.89f,0.0025f,0.0008f,0.2f,
+    gimbal_ctx.pid.yaw_speed_pid = new pid_t(0.89f,0.0025f,0.0008f,1.0f,
                 3.0f,60,20,4);
-    gimbal_ctx.pid.pitch_speed_pid = new pid_t(0.89f,0.008f,0.0008f,0.6f,
-                3.0f,60,30,4);
+    gimbal_ctx.pid.pitch_speed_pid = new pid_t(1.265f,0.0065f,0.0005f,0.8f,
+                3.0f,100,50,4);
     gimbal_ctx.pid.roll_speed_pid = new pid_t(0.75f,0.0005f,0.0004f,1.0f,
                 8.0f,40,20,4);
 
@@ -100,8 +100,6 @@ void uav_gimbal_t::gimbal_control(gimbal_ctx_t *ctx)
 
     ctx->data._output_yaw_torque = - ctx->pid.yaw_speed_pid->calculate(
             ctx->data._target_yaw_speed,ctx->data._current_imu_yaw_speed);
-
-    // float Gravity_Compensation = 0.22f * cosf(ctx->data._current_imu_pitch_angle);
 
     ctx->data._output_pitch_torque = ctx->pid.pitch_speed_pid->calculate(
             ctx->data._target_pitch_speed,ctx->data._current_imu_pitch_speed);
