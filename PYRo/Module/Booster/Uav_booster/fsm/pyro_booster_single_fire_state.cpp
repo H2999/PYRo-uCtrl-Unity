@@ -13,6 +13,7 @@ void uav_booster_t::fsm_active_t::shoot_single_bullet_t::execute(uav_booster_t *
     {
         owner->booster_ctx.cmd->single_mode = false;
         owner->booster_ctx.data_ctx.target_trigger_rad += PI / 4;
+        request_switch(&owner->active_state.interim_state);
     }
 
     if (owner->booster_ctx.data_ctx.target_trigger_rad > PI)

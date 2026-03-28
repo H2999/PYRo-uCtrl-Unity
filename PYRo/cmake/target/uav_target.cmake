@@ -18,10 +18,10 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
         PYRo/Module/Booster/Uav_booster/fsm/pyro_auto_aim_state.cpp
         PYRo/Module/Booster/Uav_booster/pyro_uav_booster.cpp
 
-        PYRo/signal/pyro_uart_comm.cpp
+        PYRo/auto_serial/pyro_uart_comm.cpp
 )
 target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC
         PYRo/Module/Gimbal/Uav
         PYRo/Module/Booster/Uav_booster
-        PYRo/signal
+        PYRo/auto_serial
 )

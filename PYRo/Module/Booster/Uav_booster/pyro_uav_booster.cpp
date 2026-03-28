@@ -30,6 +30,9 @@ status_t uav_booster_t::_init()
         new pid_t(8.4f, 0.05, 0, 1.0f, 10.0f, 100, 80, 4);
     booster_ctx.cfg.pid_cfg.trigger_speed_pid =
         new pid_t(6.8f, 0.05, 0, 1.0, 15.0f, 100, 80, 4);
+
+    //弹速闭环
+    // booster_ctx.cfg.pid_cfg.shoot_closed_pid = new pid_t(4.0f, 0.05, 0, 1.0f, 10.0f);
     return PYRO_OK;
 }
 

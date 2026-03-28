@@ -29,14 +29,23 @@ extern "C"
             return;
         }
 
-        else if(dr16_drv_t::sw_state_t::SW_DOWN == p_ctrl->rc.s_r.state)
+        if(dr16_drv_t::sw_state_t::SW_DOWN == p_ctrl->rc.s_r.state)
         {
             uav_booster_cmd_ptr->mode      = cmd_base_t::mode_t::ACTIVE;
+        }
+
+        if (dr16_drv_t::sw_ctrl_t::SW_MID_TO_UP == p_ctrl->rc.s_l.ctrl)
+        {
             uav_booster_cmd_ptr->target_fric1_mps = -16.0f;
             uav_booster_cmd_ptr->target_fric2_mps = 16.0f;
         }
+        if (dr16_drv_t::sw_ctrl_t::SW_UP_TO_MID == p_ctrl->rc.s_l.ctrl)
+        {
+            uav_booster_cmd_ptr->target_fric1_mps = 0.0f;
+            uav_booster_cmd_ptr->target_fric2_mps = 0.0f;
+        }
 
-        uav_booster_cmd_ptr->booster_auto_flag = operate_bytes.output_data.fire;
+        // uav_booster_cmd_ptr->booster_auto_flag = operate_bytes.output_data.fire;
         if (dr16_drv_t::sw_ctrl_t::SW_MID_TO_DOWN == p_ctrl->rc.s_l.ctrl)
         {
             uav_booster_cmd_ptr->trigger_enable = true;

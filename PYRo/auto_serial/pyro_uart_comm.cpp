@@ -50,7 +50,7 @@ uart_comm_t::~uart_comm_t()
 // 注册重载 1：无帧头校验，仅校验长度
 void uart_comm_t::register_msg_type(uint16_t length)
 {
-    msg_config_t cfg;
+    msg_config_t cfg{};
     cfg.length = length;
     cfg.header_len = 0; // 显式置 0，代表不校验帧头
 
