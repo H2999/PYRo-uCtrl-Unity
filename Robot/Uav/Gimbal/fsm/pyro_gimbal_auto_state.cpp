@@ -1,4 +1,4 @@
-#include "Gimbal/Uav/pyro_uav_gimbal.h"
+#include "pyro_uav_gimbal.h"
 
 using namespace pyro;
 
@@ -19,13 +19,15 @@ void uav_gimbal_t::fsm_active_t::state_auto_t::execute(uav_gimbal_t *owner)
     }
 
 
+
     if (owner->gimbal_ctx.data._target_yaw_angle > owner->gimbal_ctx.data.yaw_real_max_limit_angle)
     {
         owner->gimbal_ctx.data._target_yaw_angle = owner->gimbal_ctx.data.yaw_real_max_limit_angle;
     }
     if (owner->gimbal_ctx.data._target_yaw_angle < owner->gimbal_ctx.data.yaw_real_min_limit_angle)
     {
-        owner->gimbal_ctx.data._target_yaw_angle = owner->gimbal_ctx.data.yaw_real_min_limit_angle;
+        //延时补偿 模拟通信 + 姿态解算时间延时
+        owner->gimbal_ctx.data._target_yaw_angle = owner->gimbal_ctx.data.yaw_real_min_limit_angle +  + owner->gimbal_ctx.data._current_imu_yaw_speed * 0.008f;
     }
 
     if (owner->gimbal_ctx.cmd->pitch_target_angle > 10.0f)

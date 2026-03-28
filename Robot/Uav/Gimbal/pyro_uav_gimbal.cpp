@@ -101,8 +101,10 @@ void uav_gimbal_t::gimbal_control(gimbal_ctx_t *ctx)
     ctx->data._output_yaw_torque = - ctx->pid.yaw_speed_pid->calculate(
             ctx->data._target_yaw_speed,ctx->data._current_imu_yaw_speed);
 
+    constexpr float kff = 0.03f;
+    const float feedback_pitch = kff * ctx->data._target_pitch_speed;
     ctx->data._output_pitch_torque = ctx->pid.pitch_speed_pid->calculate(
-            ctx->data._target_pitch_speed,ctx->data._current_imu_pitch_speed);
+            ctx->data._target_pitch_speed + feedback_pitch,ctx->data._current_imu_pitch_speed);
 
     ctx->data._output_roll_torque = - ctx->pid.roll_speed_pid->calculate(
             ctx->data._target_roll_speed,ctx->data._current_imu_roll_speed);

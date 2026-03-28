@@ -180,6 +180,10 @@ private:
 
     static constexpr float FRIC1_RADIUS = 0.03f;
     static constexpr float FRIC2_RADIUS = 0.03f;
+    //
+    // a1 = 1.8226949252
+    // a2 = -0.8371816513
+    // b0 = 0.0036216815
 };
 
 };

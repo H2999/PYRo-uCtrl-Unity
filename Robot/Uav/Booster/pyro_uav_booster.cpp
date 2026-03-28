@@ -47,8 +47,6 @@ float uav_booster_t::normalize_angle(float angle)
 
 void uav_booster_t::_update_feedback()
 {
-    booster_ctx.auto_ctx.fire_enable = booster_ctx.cmd->booster_auto_flag;
-
     //更新反馈
     booster_ctx.cfg.motor_cfg.fric_wheel[0]->update_feedback();
     booster_ctx.cfg.motor_cfg.fric_wheel[1]->update_feedback();

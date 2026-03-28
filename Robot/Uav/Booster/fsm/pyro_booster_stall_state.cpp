@@ -1,4 +1,4 @@
-#include "pyro_uav_booster.h"
+#include "../pyro_uav_booster.h"
 using namespace pyro;
 
 void uav_booster_t::fsm_active_t::shoot_stall_t::enter(uav_booster_t *owner)
@@ -12,7 +12,7 @@ void uav_booster_t::fsm_active_t::shoot_stall_t::enter(uav_booster_t *owner)
     {
         if (stall_count  < 3)
         {
-            owner->booster_ctx.data_ctx.target_trigger_rad += PI / 12;
+            owner->booster_ctx.data_ctx.target_trigger_rad -= PI / 12;  //加减号待定
             stall_count ++;
         }
         else

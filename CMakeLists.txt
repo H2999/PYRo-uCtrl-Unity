@@ -108,16 +108,8 @@ add_executable(${CMAKE_PROJECT_NAME}
 
 
         # --- Application ---
-
-        ## --- Demo ---
-        PYRo/Application/Demo/demo_task.cpp
-        PYRo/Application/Demo/pyro_motor_demo.cpp
-        PYRo/Application/Demo/pyro_rc_demo.cpp
-        PYRo/Application/Demo/pyro_shoot_demo.cpp
-
-        ## --- Mission ---
-        PYRo/Application/Mission/pyro_init_thread.cpp
-        PYRo/Application/Mission/pyro_mission_planer.cpp
+        Robot/Application/pyro_init_thread.cpp
+        Robot/Application/pyro_mission_planer.cpp
 
         # --- Debug ---
         PYRo/Debug/Debug_task.cpp
@@ -144,7 +136,7 @@ elseif(ROBOT_ID EQUAL INFANTRY2_ID)
 elseif(ROBOT_ID EQUAL SENTRY_ID)
     include(${CMAKE_CURRENT_SOURCE_DIR}/PYRo/cmake/target/sentry_target.cmake)
 elseif(ROBOT_ID EQUAL UAV_ID)
-    include(${CMAKE_CURRENT_SOURCE_DIR}/PYRo/cmake/target/uav_target.cmake)
+    include(${CMAKE_CURRENT_SOURCE_DIR}/Robot/uav_target.cmake)
 endif ()
 
 add_subdirectory(cmake/stm32cubemx)

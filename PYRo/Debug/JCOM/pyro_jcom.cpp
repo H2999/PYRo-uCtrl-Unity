@@ -4,7 +4,7 @@
 #include "pyro_core_config.h"
 #include "pyro_uart_message.h"
 #include "pyro_uav_booster.h"
-#include "Gimbal/Uav/pyro_uav_gimbal.h"
+#include "pyro_uav_gimbal.h"
 
 
 extern pyro::uav_gimbal_t *gimbal_ptr;

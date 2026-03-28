@@ -1,4 +1,4 @@
-#include "Gimbal/Uav/pyro_uav_gimbal.h"
+#include "pyro_uav_gimbal.h"
 
 using namespace pyro;
 

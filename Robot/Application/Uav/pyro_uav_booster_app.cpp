@@ -1,7 +1,7 @@
 #include "pyro_module_base.h"
 #include "pyro_rc_hub.h"
 #include "pyro_uart_message.h"
-#include "pyro_uav_booster.h"
+#include "../../../../Robot/Uav/Booster/pyro_uav_booster.h"
 
 using namespace pyro;
 uav_booster_t *uav_booster_ptr           = nullptr;
@@ -58,6 +58,25 @@ extern "C"
         }
 
     }
+
+    //键鼠控制逻辑可以这样写
+    // if(gimbal_control.gimbal_rc_ctrl->key.v & KEY_PRESSED_OFFSET_B)
+    //     pc_send_msg.tx_data.state = 0;
+    // else
+    //     pc_send_msg.tx_data.state = 1;
+
+    // if(gimbal_control.gimbal_pitch_motor.gimbal_motor_mode == GIMBAL_MOTOR_PC)
+    //     pc_send_msg.tx_data.pc_state = 1;
+    // else
+    //     pc_send_msg.tx_data.pc_state = 0;
+    // if(robot_state.robot_id> 50)
+    //     color_flag = 1;
+    // else
+    //     color_flag = 0;
+    // if(color_flag == 0)
+    //     pc_send_msg.tx_data.enemy_color = 0;
+    // else if(color_flag == 1)
+    //     pc_send_msg.tx_data.enemy_color = 1;
 
     void uav_booster_thread(void *argument)
     {

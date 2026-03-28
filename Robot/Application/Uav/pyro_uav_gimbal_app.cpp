@@ -1,7 +1,7 @@
 #include "pyro_module_base.h"
 #include "pyro_rc_hub.h"
 #include "pyro_uart_message.h"
-#include "Gimbal/Uav/pyro_uav_gimbal.h"
+#include "../../../../Robot/Uav/Gimbal/pyro_uav_gimbal.h"
 
 using namespace pyro;
 uav_gimbal_t *gimbal_ptr                       = nullptr;

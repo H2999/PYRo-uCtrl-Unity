@@ -158,6 +158,7 @@ class uart_comm_t
     bool internal_rx_callback(uint8_t *p, uint16_t size, BaseType_t &xHigherPriorityTaskWoken);
 };
 
+
 } // namespace pyro
 
 #endif // __PYRO_UART_COMM_H__
