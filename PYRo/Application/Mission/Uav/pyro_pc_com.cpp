@@ -34,8 +34,8 @@ extern "C"
             state_bytes.input_data.autoaim = 1;
             state_bytes.input_data.enemy_color = 0;
             state_bytes.frame_tailer.end = '\n';
-            append_crc16_check_sum((uint8_t*)&state_bytes,sizeof(StateBytes) - 1);
-            uart_drv_t::get_instance(uart_drv_t::which_uart::uart7)->write((uint8_t*)&state_bytes, sizeof(StateBytes));
+            append_crc16_check_sum(reinterpret_cast<uint8_t *>(&state_bytes),sizeof(StateBytes) - 1);
+            uart_drv_t::get_instance(uart_drv_t::which_uart::uart7)->write(reinterpret_cast<uint8_t *>(&state_bytes), sizeof(StateBytes));
             vTaskDelay(1);
         }
     }
