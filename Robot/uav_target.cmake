@@ -19,7 +19,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
         Robot/Uav/Booster/pyro_uav_booster.cpp
 
         Robot/Uav/auto_aim_serial/pyro_uart_comm.cpp
-        Robot/Application/auto_aim/pc_info.cpp
+#        Robot/Application/auto_aim/pc_info.cpp
         Robot/Uav/rc_demo.cpp
         Robot/rc/rc.cpp
 )
