@@ -83,6 +83,7 @@ typedef struct
     mouse_state_t mouse_state;
     float press_time;
 }press_t;
+#pragma pack(pop)
 
 typedef struct
 {
@@ -106,24 +107,26 @@ typedef struct
         press_t press_r;
     }mouse;
 }dr16_ctrl_t;
-#pragma pack(pop)
 
 class rc_ctrl_t
 {
 public:
-    rc_ctrl_t(const Rc_ctrl_t *data);
+    rc_ctrl_t(Rc_ctrl_t *data);
     ~rc_ctrl_t();
 
     void init();
     void unpack_data(uint8_t *data);
     void control_logic(dr16_ctrl_t *dr16_data) const;
-    void handle_irq();
+    void handle_rx_event(uint16_t size);
+    static void uart_rx_wrapper(UART_HandleTypeDef *huart,uint16_t Size);
 private:
     dr16_ctrl_t dr_data{};
-    Rc_ctrl_t rc_data{};
+    Rc_ctrl_t *rc_data{};
     uint8_t rx_buf_switch{};
     uint8_t *rx_buf[2]{};
-    uint8_t UART5_MAX_RECV_LEN = 30;
+    uint8_t UART5_MAX_RECV_LEN = 18;
+
+    static rc_ctrl_t* instance;
 };
 
 

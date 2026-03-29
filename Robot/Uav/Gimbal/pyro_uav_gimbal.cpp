@@ -112,9 +112,11 @@ void uav_gimbal_t::gimbal_control(gimbal_ctx_t *ctx)
 
 void uav_gimbal_t::send_motor_command(const gimbal_ctx_t *ctx)
 {
-     ctx->motor.yaw_motor->send_torque(ctx->data._output_yaw_torque);
+     // ctx->motor.yaw_motor->send_torque(ctx->data._output_yaw_torque);
+     ctx->motor.yaw_motor->send_torque(0);
 
-     ctx->motor.pitch_motor->send_torque(ctx->data._output_pitch_torque);
+     // ctx->motor.pitch_motor->send_torque(ctx->data._output_pitch_torque);
+     ctx->motor.pitch_motor->send_torque(0);
 
      // ctx->motor.roll_motor->send_torque(ctx->data._output_roll_torque);
     ctx->motor.roll_motor->send_torque(0);

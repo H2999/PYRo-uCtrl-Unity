@@ -14,22 +14,12 @@ struct frame
 
 extern "C"
 {
-    void UART5_IRQHandler(void)
-    {
-        if (rc_ctrl != nullptr)
-        {
-            rc_ctrl->handle_irq();
-        }
-
-        HAL_UART_IRQHandler(&huart5);
-    }
-
     void uav_rc_thread(void *argument)
     {
-        tx_data.tail[0] = 0x00;
-        tx_data.tail[1] = 0x00;
-        tx_data.tail[2] = 0x80;
-        tx_data.tail[3] = 0x7f;
+        // tx_data.tail[0] = 0x00;
+        // tx_data.tail[1] = 0x00;
+        // tx_data.tail[2] = 0x80;
+        // tx_data.tail[3] = 0x7f;
         while (true)
         {
             rc_ctrl->control_logic(&dr16_data);

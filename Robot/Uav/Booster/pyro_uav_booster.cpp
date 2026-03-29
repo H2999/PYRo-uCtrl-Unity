@@ -159,13 +159,16 @@ void uav_booster_t::trigger_speed_control()
 
 void uav_booster_t::send_fric_command()
 {
-     booster_ctx.cfg.motor_cfg.fric_wheel[0]->send_torque(booster_ctx.data_ctx.fric_output_torque[0]);
-     booster_ctx.cfg.motor_cfg.fric_wheel[1]->send_torque(booster_ctx.data_ctx.fric_output_torque[1]);
+     // booster_ctx.cfg.motor_cfg.fric_wheel[0]->send_torque(booster_ctx.data_ctx.fric_output_torque[0]);
+     booster_ctx.cfg.motor_cfg.fric_wheel[0]->send_torque(0);
+     // booster_ctx.cfg.motor_cfg.fric_wheel[1]->send_torque(booster_ctx.data_ctx.fric_output_torque[1]);
+     booster_ctx.cfg.motor_cfg.fric_wheel[1]->send_torque(0);
 }
 
 void uav_booster_t::send_trigger_command()
 {
-    booster_ctx.cfg.motor_cfg.trigger_wheel->send_torque(booster_ctx.data_ctx.trigger_output_torque);
+    // booster_ctx.cfg.motor_cfg.trigger_wheel->send_torque(booster_ctx.data_ctx.trigger_output_torque);
+    booster_ctx.cfg.motor_cfg.trigger_wheel->send_torque(0);
 }
 
 } // namespace pyro

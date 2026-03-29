@@ -20,14 +20,14 @@ extern "C"
     {
         dwt_drv_t::init(480); // Initialize DWT at 480 MHz
         
-        uart_drv_t::get_instance(uart_drv_t::which_uart::uart1)
-            ->enable_rx_dma();
+        // uart_drv_t::get_instance(uart_drv_t::which_uart::uart1)
+        //     ->enable_rx_dma();
         // uart_drv_t::get_instance(uart_drv_t::which_uart::uart5)
         //     ->enable_rx_dma();
         // uart_drv_t::get_instance(uart_drv_t::which_uart::uart7)
         //     ->enable_rx_dma();
-        uart_drv_t::get_instance(uart_drv_t::which_uart::uart10)
-            ->enable_rx_dma();
+        // uart_drv_t::get_instance(uart_drv_t::which_uart::uart10)
+        //     ->enable_rx_dma();
 
         // rc_hub_t::get_instance(rc_hub_t::DR16)->enable();
         // rc_hub_t::get_instance(rc_hub_t::VT03)->enable();
@@ -46,10 +46,10 @@ extern "C"
         ins_drv = ins_drv_t::get_instance();
         ins_drv->init();
 
-        referee_drv = referee_drv_t::get_instance();
-        referee_drv->init();
+        // referee_drv = referee_drv_t::get_instance();
+        // referee_drv->init();
 
-        supercap_drv_t::get_instance()->start_rx();
+        // supercap_drv_t::get_instance()->start_rx();
 
         // vTaskDelete(nullptr);
     }
