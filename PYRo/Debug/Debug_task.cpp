@@ -4,8 +4,8 @@
 
 extern "C"
 {
-    extern void pyro_vofa_task(void *arg);
-    extern void pyro_jcom_task(void *arg);
+    // extern void pyro_vofa_task(void *arg);
+    // extern void pyro_jcom_task(void *arg);
     void start_debug_task(void *arg)
     {
 #if VOFA_DEBUG_EN
@@ -14,8 +14,8 @@ extern "C"
 #endif
 
 #if JCOM_DEBUG_EN
-        xTaskCreate(pyro_jcom_task, "pyro_jcom_task", 128, nullptr,
-                    tskIDLE_PRIORITY + 2, nullptr);
+        // xTaskCreate(pyro_jcom_task, "pyro_jcom_task", 128, nullptr,
+        //             tskIDLE_PRIORITY + 2, nullptr);
 #endif
         vTaskDelete(nullptr);
     }

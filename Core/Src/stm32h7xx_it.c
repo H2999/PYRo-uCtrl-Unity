@@ -446,16 +446,16 @@ void TIM5_IRQHandler(void)
 /**
   * @brief This function handles UART5 global interrupt.
   */
-void UART5_IRQHandler(void)
-{
-  /* USER CODE BEGIN UART5_IRQn 0 */
-
-  /* USER CODE END UART5_IRQn 0 */
-  HAL_UART_IRQHandler(&huart5);
-  /* USER CODE BEGIN UART5_IRQn 1 */
-
-  /* USER CODE END UART5_IRQn 1 */
-}
+// void UART5_IRQHandler(void)
+// {
+//   /* USER CODE BEGIN UART5_IRQn 0 */
+//
+//   /* USER CODE END UART5_IRQn 0 */
+//   HAL_UART_IRQHandler(&huart5);
+//   /* USER CODE BEGIN UART5_IRQn 1 */
+//
+//   /* USER CODE END UART5_IRQn 1 */
+// }
 
 /**
   * @brief This function handles DMA2 stream1 global interrupt.
@@ -474,16 +474,16 @@ void DMA2_Stream1_IRQHandler(void)
 /**
   * @brief This function handles UART7 global interrupt.
   */
-void UART7_IRQHandler(void)
-{
-  /* USER CODE BEGIN UART7_IRQn 0 */
-
-  /* USER CODE END UART7_IRQn 0 */
-  HAL_UART_IRQHandler(&huart7);
-  /* USER CODE BEGIN UART7_IRQn 1 */
-
-  /* USER CODE END UART7_IRQn 1 */
-}
+// void UART7_IRQHandler(void)
+// {
+//   /* USER CODE BEGIN UART7_IRQn 0 */
+//
+//   /* USER CODE END UART7_IRQn 0 */
+//   HAL_UART_IRQHandler(&huart7);
+//   /* USER CODE BEGIN UART7_IRQn 1 */
+//
+//   /* USER CODE END UART7_IRQn 1 */
+// }
 
 /**
   * @brief This function handles USART10 global interrupt.

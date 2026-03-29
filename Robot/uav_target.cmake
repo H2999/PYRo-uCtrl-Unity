@@ -20,10 +20,13 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
 
         Robot/Uav/auto_aim_serial/pyro_uart_comm.cpp
         Robot/Application/auto_aim/pc_info.cpp
+        Robot/Uav/rc_demo.cpp
+        Robot/rc/rc.cpp
 )
 target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC
         Robot/Uav/Booster
         Robot/Uav/Gimbal
         Robot/Uav/auto_aim_serial
         Robot/Application/auto_aim
+        Robot/rc
 )

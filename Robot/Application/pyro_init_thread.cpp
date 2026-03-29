@@ -22,15 +22,15 @@ extern "C"
         
         uart_drv_t::get_instance(uart_drv_t::which_uart::uart1)
             ->enable_rx_dma();
-        uart_drv_t::get_instance(uart_drv_t::which_uart::uart5)
-            ->enable_rx_dma();
-        uart_drv_t::get_instance(uart_drv_t::which_uart::uart7)
-            ->enable_rx_dma();
+        // uart_drv_t::get_instance(uart_drv_t::which_uart::uart5)
+        //     ->enable_rx_dma();
+        // uart_drv_t::get_instance(uart_drv_t::which_uart::uart7)
+        //     ->enable_rx_dma();
         uart_drv_t::get_instance(uart_drv_t::which_uart::uart10)
             ->enable_rx_dma();
 
-        rc_hub_t::get_instance(rc_hub_t::DR16)->enable();
-        rc_hub_t::get_instance(rc_hub_t::VT03)->enable();
+        // rc_hub_t::get_instance(rc_hub_t::DR16)->enable();
+        // rc_hub_t::get_instance(rc_hub_t::VT03)->enable();
 
         can_hub_t::get_instance();
         can1_drv = new can_drv_t(&hfdcan1);
