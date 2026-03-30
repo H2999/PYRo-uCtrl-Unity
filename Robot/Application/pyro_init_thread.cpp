@@ -13,7 +13,7 @@ extern "C"
     can_drv_t *can2_drv;
     can_drv_t *can3_drv;
     ins_drv_t *ins_drv;
-    referee_drv_t *referee_drv;
+    // referee_drv_t *referee_drv;
 
 
     void pyro_init_thread(void *argument)
@@ -32,16 +32,16 @@ extern "C"
         // rc_hub_t::get_instance(rc_hub_t::DR16)->enable();
         // rc_hub_t::get_instance(rc_hub_t::VT03)->enable();
 
-        can_hub_t::get_instance();
-        can1_drv = new can_drv_t(&hfdcan1);
-        can2_drv = new can_drv_t(&hfdcan2);
-        can3_drv = new can_drv_t(&hfdcan3);
-        can1_drv->init();
-        can2_drv->init();
-        can3_drv->init();
-        can1_drv->start();
-        can2_drv->start();
-        can3_drv->start();
+        // can_hub_t::get_instance();
+        // can1_drv = new can_drv_t(&hfdcan1);
+        // can2_drv = new can_drv_t(&hfdcan2);
+        // can3_drv = new can_drv_t(&hfdcan3);
+        // can1_drv->init();
+        // can2_drv->init();
+        // can3_drv->init();
+        // can1_drv->start();
+        // can2_drv->start();
+        // can3_drv->start();
 
         ins_drv = ins_drv_t::get_instance();
         ins_drv->init();

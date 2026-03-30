@@ -115,16 +115,17 @@ public:
     ~rc_ctrl_t();
 
     void init();
+    static void wrtie(UART_HandleTypeDef *huart, const uint8_t *pData, uint16_t Size, uint32_t Timeout);
     void unpack_data(uint8_t *data);
     void control_logic(dr16_ctrl_t *dr16_data) const;
     void handle_rx_event(uint16_t size);
     static void uart_rx_wrapper(UART_HandleTypeDef *huart,uint16_t Size);
-private:
+
+
     dr16_ctrl_t dr_data{};
     Rc_ctrl_t *rc_data{};
     uint8_t rx_buf_switch{};
     uint8_t *rx_buf[2]{};
-    uint8_t UART5_MAX_RECV_LEN = 18;
 
     static rc_ctrl_t* instance;
 };

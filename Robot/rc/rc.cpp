@@ -9,8 +9,8 @@ rc_ctrl_t* rc_ctrl_t::instance = nullptr;
 rc_ctrl_t::rc_ctrl_t(Rc_ctrl_t *data)
 {
     instance = this;
-    rx_buf[0] = static_cast<uint8_t *>(pvPortDmaMalloc(UART5_MAX_RECV_LEN));
-    rx_buf[1] = static_cast<uint8_t *>(pvPortDmaMalloc(UART5_MAX_RECV_LEN));
+    rx_buf[0] = static_cast<uint8_t *>(pvPortDmaMalloc(128));
+    rx_buf[1] = static_cast<uint8_t *>(pvPortDmaMalloc(128));
     rc_data = data;
 }
 
@@ -60,32 +60,109 @@ void rc_ctrl_t::control_logic(dr16_ctrl_t *dr16_data) const
 
 void rc_ctrl_t::init()
 {
-    HAL_UART_RegisterRxEventCallback(&huart5, uart_rx_wrapper);
-
-    __HAL_UART_ENABLE_IT(&huart5, UART_IT_IDLE);
-    __HAL_UART_DISABLE_IT(&huart5, UART_IT_RXNE);
-
-    HAL_UARTEx_ReceiveToIdle_DMA(&huart5, rx_buf[0], 18);
-}
-
-void rc_ctrl_t::uart_rx_wrapper(UART_HandleTypeDef *huart,const uint16_t Size)
-{
-    if (instance != nullptr)
-    {
-        instance->handle_rx_event(Size);
-    }
-}
-
-void rc_ctrl_t::handle_rx_event(uint16_t size)
-{
-    SCB_InvalidateDCache_by_Addr((uint32_t*)rx_buf[rx_buf_switch], 18);
-
-    if (size >= 18)
-    {
-        unpack_data(rx_buf[rx_buf_switch]);
+    // 1. 强行解除 HAL 库的软件锁 (这是解决 HAL_LOCKED 的唯一办法)
+    huart5.Lock = HAL_UNLOCKED;
+    if (huart5.hdmarx) {
+        huart5.hdmarx->Lock = HAL_UNLOCKED;
+        huart5.hdmarx->State = HAL_DMA_STATE_READY;
     }
 
-    rx_buf_switch = 1 - rx_buf_switch;
+    // 2. 先彻底停止 DMA 搬运工
+    HAL_DMA_Abort(huart5.hdmarx);
 
-    HAL_UARTEx_ReceiveToIdle_DMA(&huart5, rx_buf[rx_buf_switch], 18);
+    // 3. 物理配置串口 (核心：解决 NDTR=25 不动的问题)
+    UART5->CR1 &= ~USART_CR1_UE;
+    UART5->CR2 |= USART_CR2_RXINV; // S.Bus 必须电平反转！
+    UART5->CR1 |= USART_CR1_UE;
+
+    // 4. 清理串口所有的陈年垃圾标志位
+    UART5->ICR = 0xFFFFFFFF;
+    volatile uint32_t dummy = UART5->RDR;
+    (void)dummy;
+
+    // 5. 重新启动接收
+    huart5.RxState = HAL_UART_STATE_READY;
+    if (HAL_UARTEx_ReceiveToIdle_DMA(&huart5, rx_buf[0], 25) != HAL_OK) {
+        // 如果这里还返回错误，说明硬件配置还是没进去
+        // 可以尝试直接操作寄存器开启 DMAR:
+        SET_BIT(UART5->CR3, USART_CR3_DMAR);
+    }
+
+    // 6. 禁用半传输中断，降低 CPU 负担
+    __HAL_DMA_DISABLE_IT(huart5.hdmarx, DMA_IT_HT);
+}
+
+void rc_ctrl_t::wrtie(UART_HandleTypeDef *huart, const uint8_t *pData, uint16_t Size, uint32_t Timeout)
+{
+    HAL_UART_Transmit(huart, pData, Size, Timeout);
+}
+
+// void rc_ctrl_t::init()
+// {
+//     // HAL_UART_RegisterRxEventCallback(&huart5, uart_rx_wrapper);
+//     HAL_UARTEx_ReceiveToIdle_DMA(&huart5, rx_buf[0], 18);
+//     __HAL_DMA_DISABLE_IT(huart5.hdmarx, DMA_IT_HT);
+// }
+
+// void rc_ctrl_t::uart_rx_wrapper(UART_HandleTypeDef *huart,const uint16_t Size)
+// {
+//     if (instance != nullptr)
+//     {
+//         instance->handle_rx_event(Size);
+//     }
+// }
+
+// void rc_ctrl_t::handle_rx_event(uint16_t size)
+// {
+//     __HAL_UART_CLEAR_FLAG(&huart5, UART_CLEAR_PEF | UART_CLEAR_FEF |
+//                                           UART_CLEAR_NEF | UART_CLEAR_OREF |
+//                                           UART_CLEAR_RTOF);
+//     SCB_InvalidateDCache_by_Addr((uint32_t*)rx_buf[rx_buf_switch], 18); // 建议 32 字节对齐
+//
+//     // if (size >= 18) {
+//     //     // unpack_data()
+//     // }
+//
+//     rx_buf_switch = 1 - rx_buf_switch;
+//     HAL_UARTEx_ReceiveToIdle_DMA(&huart5, rx_buf[rx_buf_switch], 18);
+//
+// }
+
+extern "C" void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
+{
+    if (huart->Instance != UART5 || rc_ctrl_t::instance == nullptr) return;
+
+    // --- 核心修复：如果 ISR 还是错的，直接重置硬件而非继续执行 ---
+    if (huart->Instance->ISR & USART_ISR_ORE) {
+        huart->Instance->ICR = USART_ICR_ORECF; // 清除溢出
+        volatile uint32_t d = huart->Instance->RDR;
+        (void)d;
+        goto restart;
+    }
+
+    SCB_InvalidateDCache_by_Addr((uint32_t*)rc_ctrl_t::instance->rx_buf[rc_ctrl_t::instance->rx_buf_switch], 32);
+    rc_ctrl_t::instance->unpack_data(rc_ctrl_t::instance->rx_buf[rc_ctrl_t::instance->rx_buf_switch]);
+
+    restart:
+        rc_ctrl_t::instance->rx_buf_switch ^= 1;
+    // 强制关闭可能被 HAL 库误开启的 TXFEIE
+    CLEAR_BIT(huart->Instance->CR1, USART_CR1_TXFEIE);
+
+    huart->RxState = HAL_UART_STATE_READY;
+    HAL_UARTEx_ReceiveToIdle_DMA(huart, rc_ctrl_t::instance->rx_buf[rc_ctrl_t::instance->rx_buf_switch], 18);
+    __HAL_DMA_DISABLE_IT(huart->hdmarx, DMA_IT_HT);
+}
+
+extern "C" void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
+{
+    if (huart->Instance == UART5)
+    {
+        // 发现错误（如 ORE），清理现场并原地复活
+        huart->Instance->ICR = 0xFFFFFFFF;
+        volatile uint32_t d = huart->Instance->RDR;
+        (void)d;
+
+        // 重新启动接收
+        rc_ctrl_t::instance->init();
+    }
 }
